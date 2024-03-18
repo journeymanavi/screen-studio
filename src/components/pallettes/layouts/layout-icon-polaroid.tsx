@@ -1,14 +1,15 @@
+import { LayoutIcon } from "./layout-icon";
+
 export interface LayoutIconPolaroidProps {
   onClick?: React.HTMLAttributes<HTMLDivElement>["onClick"];
 }
 
 export const LayoutIconPolaroid = ({ onClick }: LayoutIconPolaroidProps) => {
   return (
-    <div
-      className="flex gap-1 items-end bg-gray-200 w-[100px] h-[75px] p-1 cursor-pointer"
-      onClick={onClick}
-    >
-      <div className="bg-white flex-1 h-[70%]"></div>
-    </div>
+    <LayoutIcon label="Polaroid" onClick={onClick}>
+      <div className="flex-1 flex gap-1 items-end p-1" onClick={onClick}>
+        <div className="bg-white flex-1 h-[70%]"></div>
+      </div>
+    </LayoutIcon>
   );
 };
