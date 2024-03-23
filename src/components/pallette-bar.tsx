@@ -8,6 +8,7 @@ import {
   Tv2Icon,
 } from "lucide-react";
 import { LayoutIconBentoBox } from "./pallettes/layouts/layout-icon-bento-box";
+import { LayoutIconFullScreen } from "./pallettes/layouts/layout-icon-full-screen";
 import { LayoutIconPolaroid } from "./pallettes/layouts/layout-icon-polaroid";
 import {
   Accordion,
@@ -65,8 +66,9 @@ export const PalletteBar = () => (
           </span>
         </AccordionTrigger>
         <AccordionContent className="flex gap-2 flex-wrap p-2">
-          <LayoutIconBentoBox />
+          <LayoutIconFullScreen />
           <LayoutIconPolaroid />
+          <LayoutIconBentoBox />
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="components-pallette">
