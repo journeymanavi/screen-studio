@@ -34,17 +34,6 @@ export const PalletteBar = () => (
             <span className="flex gap-2">
               <Tv2Icon /> Screens
             </span>
-            <Button
-              size={"icon"}
-              variant={"ghost"}
-              onClick={(e) => {
-                alert("TODO: Add Screen");
-                e.preventDefault();
-              }}
-              className="w-[24px] h-[24px]"
-            >
-              <PlusIcon size={16} />
-            </Button>
           </div>
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-2 flex-wrap p-2">
@@ -55,6 +44,18 @@ export const PalletteBar = () => (
           <div className="flex-1 py-1 px-2 rounded-sm flex items-center justify-between gap-2 hover:bg-gray-100">
             <span className="text-xs">Screen 2</span> <EyeOffIcon size={16} />
           </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={(e) => {
+              alert("TODO: Add Screen");
+              e.preventDefault();
+            }}
+            className="self-start text-xs"
+          >
+            <PlusIcon className="mr-2 h-4 w-4" />
+            Add Screen
+          </Button>
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="layouts-pallette">
