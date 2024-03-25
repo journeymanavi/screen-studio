@@ -15,6 +15,37 @@ const addEditorStateToHistory = (
   };
 };
 
+const undo = (state: StudioState): StudioState => {
+  if (
+    state.editorHistory.history.length <= 1 ||
+    state.editorHistory.current === 0
+  ) {
+    return state;
+  }
+  const newCurrent = state.editorHistory.current - 1;
+  const newEditor = { ...state.editorHistory.history[newCurrent] };
+  const updatedState: StudioState = {
+    ...state,
+    editor: newEditor,
+    editorHistory: { ...state.editorHistory, current: newCurrent },
+  };
+  return updatedState;
+};
+
+const redo = (state: StudioState): StudioState => {
+  if (state.editorHistory.history.length <= state.editorHistory.current + 1) {
+    return state;
+  }
+  const newCurrent = state.editorHistory.current + 1;
+  const newEditor = { ...state.editorHistory.history[newCurrent] };
+  const updatedState: StudioState = {
+    ...state,
+    editor: newEditor,
+    editorHistory: { ...state.editorHistory, current: newCurrent },
+  };
+  return updatedState;
+};
+
 const addScreen = (state: StudioState): StudioState => {
   const updatedEditor: Editor = {
     ...state.editor,
@@ -32,13 +63,13 @@ const addScreen = (state: StudioState): StudioState => {
     updatedEditor
   );
 
-  const updatedStudioState: StudioState = {
+  const updatedState: StudioState = {
     ...state,
     editor: updatedEditor,
     editorHistory: updatedEditorHistory,
   };
 
-  return updatedStudioState;
+  return updatedState;
 };
 
 const showDeleteScreenDialog = (
@@ -83,16 +114,24 @@ const deleteScreen = (state: StudioState, indexToDelete: number) => {
     return state;
   }
 
+  const updatedEditor = {
+    ...state.editor,
+    screens: [
+      ...state.editor.screens.filter((_, index) => index !== indexToDelete),
+    ],
+    selectedScreen: Math.max(indexToDelete - 1, 0),
+    requestedDeleteScreen: null,
+  };
+
+  const updatedEditorHistory = addEditorStateToHistory(
+    state.editorHistory,
+    updatedEditor
+  );
+
   const updatedState: StudioState = {
     ...state,
-    editor: {
-      ...state.editor,
-      screens: [
-        ...state.editor.screens.filter((_, index) => index !== indexToDelete),
-      ],
-      selectedScreen: Math.max(indexToDelete - 1, 0),
-      requestedDeleteScreen: null,
-    },
+    editor: updatedEditor,
+    editorHistory: updatedEditorHistory,
   };
 
   return updatedState;
@@ -115,6 +154,10 @@ export const StudioReducer: Reducer<StudioState, StudioAction> = (
   action
 ) => {
   switch (action.type) {
+    case "UNDO":
+      return undo(state);
+    case "REDO":
+      return redo(state);
     case "SELECT_SCREEN":
       return selectScreen(state, action.payload.index);
     case "ADD_SCREEN":

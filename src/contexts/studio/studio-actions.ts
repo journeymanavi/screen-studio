@@ -1,5 +1,11 @@
 export type StudioAction =
   | {
+      type: "UNDO";
+    }
+  | {
+      type: "REDO";
+    }
+  | {
       type: "SELECT_SCREEN";
       payload: {
         index: number;
