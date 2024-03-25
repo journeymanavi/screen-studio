@@ -1,4 +1,4 @@
-import { useStudio } from "@/contexts/studio/studio-hooks";
+import { useStudio } from "@/contexts/studio/studio-hook";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboardIcon,

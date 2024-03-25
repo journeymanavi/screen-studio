@@ -1,4 +1,4 @@
-import { useStudio } from "@/contexts/studio/studio-hooks";
+import { useStudio } from "@/contexts/studio/studio-hook";
 import { DRAGGABLE_TYPE_DATA_TRANSFER_KEY } from "./drag-n-drop/draggable";
 import { Dropzone } from "./drag-n-drop/dropzone";
 

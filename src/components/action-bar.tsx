@@ -1,4 +1,4 @@
-import { useStudio } from "@/contexts/studio/studio-hooks";
+import { useStudio } from "@/contexts/studio/studio-hook";
 import { PlayIcon, Redo2Icon, Undo2Icon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
