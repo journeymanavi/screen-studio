@@ -1,24 +1,29 @@
-import { Editor, EditorHistory, StudioState } from "./types";
+import {
+  Editor,
+  EditorHistory,
+  EditorMode,
+  Screen,
+  StudioState,
+} from "@/types";
 
-export const SCREEN_COMPONENT_TYPE_TEXT = "SCREEN_COMPONENT_TYPE_TEXT";
-export const SCREEN_COMPONENT_TYPE_IMAGE = "SCREEN_COMPONENT_TYPE_IMAGE";
-export const SCREEN_COMPONENT_TYPE_VIDEO = "SCREEN_COMPONENT_VIDEO";
-export const SCREEN_LAYOUT_TYPE_FULL_SCREEN = "SCREEN_LAYOUT_TYPE_FULL_SCREEN";
-export const SCREEN_LAYOUT_TYPE_POLAROID = "SCREEN_LAYOUT_TYPE_POLAROID";
-export const SCREEN_LAYOUT_TYPE_BENTO_BOX = "SCREEN_LAYOUT_TYPE_BENTO_BOX";
-export const STUDIO_MODE_EDIT = "STUDIO_MODE_EDIT";
-export const STUDIO_MODE_PREVIEW = "STUDIO_MODE_PREVIEW";
+export const initialEditorModeState: EditorMode = "EDITOR_MODE_EDIT";
+export const initialScreenLayoutState: Screen["layout"] = null;
+export const initialScreenAspectRatio: Screen["aspectRatio"] = "16:9";
+export const initialScreenState: Screen = {
+  layout: initialScreenLayoutState,
+  aspectRatio: initialScreenAspectRatio,
+};
+export const initialScreensState = [initialScreenState];
+export const initialSelectedScreenState = 0;
+export const initialSelectedElementState = null;
+export const initialRequestedDeleteScreen = null;
 
 export const initialEditorState: Editor = {
-  mode: "STUDIO_MODE_EDIT",
-  screens: [
-    {
-      layout: null,
-    },
-  ],
-  selectedScreen: 0,
-  selectedElement: null,
-  requestedDeleteScreen: null,
+  mode: initialEditorModeState,
+  screens: initialScreensState,
+  selectedScreen: initialSelectedScreenState,
+  selectedElement: initialSelectedElementState,
+  requestedDeleteScreen: initialRequestedDeleteScreen,
 };
 
 export const initialEditorHistoryState: EditorHistory = {

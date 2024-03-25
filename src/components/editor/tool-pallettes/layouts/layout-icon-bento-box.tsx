@@ -9,7 +9,7 @@ export const LayoutIconBentoBox = ({ onClick }: LayoutIconBentoBoxProps) => {
     <LayoutIcon
       label="Bento Box"
       onClick={onClick}
-      draggableType="layout-bento-box"
+      draggableType="SCREEN_LAYOUT_TYPE_BENTO_BOX"
     >
       <div className="flex-1 flex gap-1 p-1 ">
         <div className="bg-white flex-1"></div>

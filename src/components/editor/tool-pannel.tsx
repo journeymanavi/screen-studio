@@ -8,15 +8,12 @@ import {
   TrashIcon,
   Tv2Icon,
 } from "lucide-react";
-import { LayoutIconBentoBox } from "./pallettes/layouts/layout-icon-bento-box";
-import { LayoutIconFullScreen } from "./pallettes/layouts/layout-icon-full-screen";
-import { LayoutIconPolaroid } from "./pallettes/layouts/layout-icon-polaroid";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./ui/accordion";
+} from "../ui/accordion";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,8 +23,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "./ui/alert-dialog";
-import { Button } from "./ui/button";
+} from "../ui/alert-dialog";
+import { Button } from "../ui/button";
+import { LayoutIconBentoBox } from "./tool-pallettes/layouts/layout-icon-bento-box";
+import { LayoutIconFullScreen } from "./tool-pallettes/layouts/layout-icon-full-screen";
+import { LayoutIconPolaroid } from "./tool-pallettes/layouts/layout-icon-polaroid";
 
 export const ToolPanel = () => {
   const { studioState, dispatch } = useStudio();

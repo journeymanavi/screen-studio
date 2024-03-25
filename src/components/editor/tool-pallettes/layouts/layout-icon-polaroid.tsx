@@ -9,7 +9,7 @@ export const LayoutIconPolaroid = ({ onClick }: LayoutIconPolaroidProps) => {
     <LayoutIcon
       label="Polaroid"
       onClick={onClick}
-      draggableType="layout-polaroid"
+      draggableType="SCREEN_LAYOUT_TYPE_POLAROID"
     >
       <div className="flex-1 flex gap-1 items-end p-1" onClick={onClick}>
         <div className="bg-white flex-1 h-[70%]"></div>

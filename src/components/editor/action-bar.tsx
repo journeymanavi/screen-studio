@@ -1,7 +1,7 @@
 import { useStudio } from "@/contexts/studio/studio-hook";
 import { PlayIcon, Redo2Icon, Undo2Icon } from "lucide-react";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
 
 export const ActionBar = () => {
   const { studioState, dispatch } = useStudio();

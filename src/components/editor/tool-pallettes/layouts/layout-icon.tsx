@@ -1,13 +1,18 @@
-import { Draggable, DraggableProps } from "@/components/drag-n-drop/draggable";
+import { Draggable } from "@/components/drag-n-drop/draggable";
+import {
+  ScreenLayoutTypeBentoBox,
+  ScreenLayoutTypeFullScreen,
+  ScreenLayoutTypePolaroid,
+} from "@/types";
 import { PropsWithChildren } from "react";
 
 export interface LayoutIconProps {
   onClick?: React.HTMLAttributes<HTMLDivElement>["onClick"];
   label: string;
-  draggableType: Extract<
-    DraggableProps["type"],
-    "layout-full-screen" | "layout-bento-box" | "layout-polaroid"
-  >;
+  draggableType:
+    | ScreenLayoutTypeFullScreen
+    | ScreenLayoutTypePolaroid
+    | ScreenLayoutTypeBentoBox;
 }
 
 export const LayoutIcon = ({

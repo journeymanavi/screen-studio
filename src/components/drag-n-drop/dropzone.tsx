@@ -22,28 +22,40 @@ export const Dropzone = ({
 
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const handleDragEnter = useCallback<DragEventHandler<HTMLDivElement>>((e) => {
-    setIsDragOver(true);
-    onDragEnter?.(e);
-  }, []);
+  const handleDragEnter = useCallback<DragEventHandler<HTMLDivElement>>(
+    (e) => {
+      setIsDragOver(true);
+      onDragEnter?.(e);
+    },
+    [onDragEnter]
+  );
 
-  const handleDragLeave = useCallback<DragEventHandler<HTMLDivElement>>((e) => {
-    setIsDragOver(false);
-    onDragLeave?.(e);
-  }, []);
+  const handleDragLeave = useCallback<DragEventHandler<HTMLDivElement>>(
+    (e) => {
+      setIsDragOver(false);
+      onDragLeave?.(e);
+    },
+    [onDragLeave]
+  );
 
-  const handleDrop = useCallback<DragEventHandler<HTMLDivElement>>((e) => {
-    e.stopPropagation();
+  const handleDrop = useCallback<DragEventHandler<HTMLDivElement>>(
+    (e) => {
+      e.stopPropagation();
 
-    onDrop(e);
+      onDrop(e);
 
-    setIsDragOver(false);
-  }, []);
+      setIsDragOver(false);
+    },
+    [onDrop]
+  );
 
-  const handleDragOver = useCallback<DragEventHandler<HTMLDivElement>>((e) => {
-    e.preventDefault();
-    onDragOver?.(e) ?? e.preventDefault();
-  }, []);
+  const handleDragOver = useCallback<DragEventHandler<HTMLDivElement>>(
+    (e) => {
+      e.preventDefault();
+      onDragOver?.(e) ?? e.preventDefault();
+    },
+    [onDragOver]
+  );
 
   return (
     <div
@@ -53,6 +65,7 @@ export const Dropzone = ({
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       className={cn(
+        "flex absolute inset-0",
         {
           "outline-2 -outline-offset-2 outline-dashed outline-sky-500":
             isDragOver,
