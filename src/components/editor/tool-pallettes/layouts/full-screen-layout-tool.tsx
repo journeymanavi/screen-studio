@@ -1,14 +1,14 @@
-import { LayoutIcon } from "./layout-icon";
+import { LayoutTool } from "./layout-tool";
 
-export interface LayoutIconFullScreenProps {
+export interface FullScreenLayoutToolProps {
   onClick?: React.HTMLAttributes<HTMLDivElement>["onClick"];
 }
 
-export const LayoutIconFullScreen = ({
+export const FullScreenLayoutTool = ({
   onClick,
-}: LayoutIconFullScreenProps) => {
+}: FullScreenLayoutToolProps) => {
   return (
-    <LayoutIcon
+    <LayoutTool
       label="Full Screen"
       onClick={onClick}
       draggableType="SCREEN_LAYOUT_TYPE_FULL_SCREEN"
@@ -16,6 +16,6 @@ export const LayoutIconFullScreen = ({
       <div className="flex-1 flex gap-1 items-end p-1" onClick={onClick}>
         <div className="bg-white flex-1 h-full"></div>
       </div>
-    </LayoutIcon>
+    </LayoutTool>
   );
 };

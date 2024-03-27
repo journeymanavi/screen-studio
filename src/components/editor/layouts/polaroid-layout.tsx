@@ -91,9 +91,7 @@ export const PolaroidLayout = ({ children }: PolaroidLayoutProps) => {
         >
           {screenLayout.component === null ? null : screenLayout.component
               .type === "SCREEN_COMPONENT_TYPE_TEXT" ? (
-            <TextComponent style={{ ...screenLayout.component.style }}>
-              {screenLayout.component.prop.innerText}
-            </TextComponent>
+            <TextComponent element={screenLayout.component} />
           ) : null}
         </Dropzone>
       </div>

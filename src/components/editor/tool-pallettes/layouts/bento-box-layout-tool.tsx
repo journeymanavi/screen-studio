@@ -1,12 +1,12 @@
-import { LayoutIcon } from "./layout-icon";
+import { LayoutTool } from "./layout-tool";
 
-export interface LayoutIconBentoBoxProps {
+export interface BentoBoxLayoutToolProps {
   onClick?: React.HTMLAttributes<HTMLDivElement>["onClick"];
 }
 
-export const LayoutIconBentoBox = ({ onClick }: LayoutIconBentoBoxProps) => {
+export const BentoBoxLayoutTool = ({ onClick }: BentoBoxLayoutToolProps) => {
   return (
-    <LayoutIcon
+    <LayoutTool
       label="Bento Box"
       onClick={onClick}
       draggableType="SCREEN_LAYOUT_TYPE_BENTO_BOX"
@@ -24,6 +24,6 @@ export const LayoutIconBentoBox = ({ onClick }: LayoutIconBentoBoxProps) => {
           </div>
         </div>
       </div>
-    </LayoutIcon>
+    </LayoutTool>
   );
 };

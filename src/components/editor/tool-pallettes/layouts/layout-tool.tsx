@@ -1,26 +1,19 @@
 import { Draggable } from "@/components/drag-n-drop/draggable";
-import {
-  ScreenLayoutTypeBentoBox,
-  ScreenLayoutTypeFullScreen,
-  ScreenLayoutTypePolaroid,
-} from "@/types";
+import { ScreenLayoutType } from "@/types";
 import { PropsWithChildren } from "react";
 
-export interface LayoutIconProps {
+export interface LayoutToolProps {
   onClick?: React.HTMLAttributes<HTMLDivElement>["onClick"];
   label: string;
-  draggableType:
-    | ScreenLayoutTypeFullScreen
-    | ScreenLayoutTypePolaroid
-    | ScreenLayoutTypeBentoBox;
+  draggableType: ScreenLayoutType;
 }
 
-export const LayoutIcon = ({
+export const LayoutTool = ({
   onClick,
   label,
   draggableType,
   children,
-}: PropsWithChildren<LayoutIconProps>) => {
+}: PropsWithChildren<LayoutToolProps>) => {
   return (
     <div className="flex flex-col gap-1 items-center">
       <Draggable type={draggableType}>

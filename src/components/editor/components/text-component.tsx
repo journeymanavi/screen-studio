@@ -1,19 +1,64 @@
 import { useStudio } from "@/contexts/studio/studio-hook";
-import { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+import { ScreenComponentText } from "@/types";
+import { FocusEventHandler, MouseEventHandler, useCallback } from "react";
 
-export const TextComponent = (props: HTMLAttributes<HTMLDivElement>) => {
-  const { studioState } = useStudio();
+export type TextComponentProps = {
+  element: ScreenComponentText;
+};
 
-  console.log("TextComponent", props);
+export const TextComponent = ({ element }: TextComponentProps) => {
+  const { studioState, dispatch } = useStudio();
+
+  const updateSelectedElement: MouseEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      e.stopPropagation();
+      if (
+        studioState.editor.selectedElement === null ||
+        studioState.editor.selectedElement.id !== element.id
+      ) {
+        dispatch({
+          type: "SELECT_SCREEN_ELEMENT",
+          payload: {
+            element,
+          },
+        });
+      }
+    },
+    [dispatch, element, studioState.editor.selectedElement]
+  );
+
+  const updateTextComponentProps: FocusEventHandler<HTMLDivElement> =
+    useCallback(
+      (e) => {
+        dispatch({
+          type: "UPDATE_SELECTED_COMPONENT_PROPS",
+          payload: {
+            props: {
+              innerText: e.currentTarget.innerText ?? "",
+            },
+          },
+        });
+      },
+      [dispatch]
+    );
 
   if (studioState.editor.mode === "EDITOR_MODE_EDIT") {
     return (
-      <span>some text</span>
-      // <div {...props} title="something" contentEditable="plaintext-only" />
+      <div
+        style={element.style}
+        className={cn({
+          "outline-1 outline-yellow-300 outline-dashed":
+            studioState.editor.selectedElement?.id === element.id,
+        })}
+        onClick={updateSelectedElement}
+        contentEditable="plaintext-only"
+        onBlur={updateTextComponentProps}
+      >
+        {element.props.innerText}
+      </div>
     );
   }
 
-  return <span>default text</span>;
-
-  // return <div {...props} />;
+  return <div style={element.style}>{element.props.innerText}</div>;
 };

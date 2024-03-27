@@ -21,34 +21,40 @@ export type ScreenComponentType =
   | ScreenComponentTypeImage
   | ScreenComponentTypeVideo;
 
+export type ScreenComponentText = {
+  id: string;
+  name: string;
+  type: ScreenComponentTypeText;
+  style: CSSProperties;
+  props: {
+    innerText?: string;
+  };
+};
+
+export type ScreenComponentImage = {
+  id: string;
+  name: string;
+  type: ScreenComponentTypeImage;
+  style: CSSProperties;
+  props: {
+    src?: string;
+  };
+};
+
+export type ScreenComponentVideo = {
+  id: string;
+  name: string;
+  type: ScreenComponentTypeVideo;
+  style: CSSProperties;
+  props: {
+    src?: string;
+  };
+};
+
 export type ScreenComponent =
-  | {
-      id: string;
-      name: string;
-      type: ScreenComponentTypeText;
-      style: CSSProperties;
-      prop: {
-        innerText?: string;
-      };
-    }
-  | {
-      id: string;
-      name: string;
-      type: ScreenComponentTypeImage;
-      style: CSSProperties;
-      prop: {
-        src?: string;
-      };
-    }
-  | {
-      id: string;
-      name: string;
-      type: ScreenComponentTypeVideo;
-      style: CSSProperties;
-      prop: {
-        src?: string;
-      };
-    };
+  | ScreenComponentText
+  | ScreenComponentImage
+  | ScreenComponentVideo;
 
 // Layout ---------------------------------------------------------------------
 
@@ -61,26 +67,32 @@ export type ScreenLayoutType =
   | ScreenLayoutTypePolaroid
   | ScreenLayoutTypeBentoBox;
 
+export type ScreenLayoutFullScreen = {
+  id: string;
+  name: string;
+  type: ScreenLayoutTypeFullScreen;
+  component: ScreenComponent | null;
+};
+
+export type ScreenLayoutPolaroid = {
+  id: string;
+  name: string;
+  type: ScreenLayoutTypePolaroid;
+  title: string;
+  component: ScreenComponent | null;
+};
+
+export type ScreenLayoutBentoBox = {
+  id: string;
+  name: string;
+  type: ScreenLayoutTypeBentoBox;
+  components: ScreenComponent[];
+};
+
 export type ScreenLayout =
-  | {
-      id: string;
-      name: string;
-      type: ScreenLayoutTypeFullScreen;
-      component: ScreenComponent | null;
-    }
-  | {
-      id: string;
-      name: string;
-      type: ScreenLayoutTypePolaroid;
-      title: string;
-      component: ScreenComponent | null;
-    }
-  | {
-      id: string;
-      name: string;
-      type: ScreenLayoutTypeBentoBox;
-      components: ScreenComponent[];
-    };
+  | ScreenLayoutFullScreen
+  | ScreenLayoutPolaroid
+  | ScreenLayoutBentoBox;
 
 // Screen ---------------------------------------------------------------------
 
@@ -155,6 +167,12 @@ export type StudioAction =
       };
     }
   | {
+      type: "SELECT_SCREEN_ELEMENT";
+      payload: {
+        element: ScreenComponent;
+      };
+    }
+  | {
       type: "ADD_LAYOUT_TO_SELECTED_SCREEN";
       payload: {
         layoutType: ScreenLayoutType;
@@ -183,6 +201,24 @@ export type StudioAction =
       payload: {
         componentType: ScreenComponentType;
         slotIndex: number;
+      };
+    }
+  | {
+      type: "UPDATE_SELECTED_COMPONENT_STYLE";
+      payload: {
+        style: CSSProperties;
+      };
+    }
+  | {
+      type: "UPDATE_SELECTED_COMPONENT_PROPS";
+      payload: {
+        props: ScreenComponent["props"];
+      };
+    }
+  | {
+      type: "UPDATE_SCREEN_ASPECT_RATIO";
+      payload: {
+        aspectRatio: ScreenAspectRatio;
       };
     };
 

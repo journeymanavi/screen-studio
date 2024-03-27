@@ -25,15 +25,19 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
-import { LayoutIconBentoBox } from "./tool-pallettes/layouts/layout-icon-bento-box";
-import { LayoutIconFullScreen } from "./tool-pallettes/layouts/layout-icon-full-screen";
-import { LayoutIconPolaroid } from "./tool-pallettes/layouts/layout-icon-polaroid";
+import { ImageComponentTool } from "./tool-pallettes/components/image-component-tool";
+import { TextComponentTool } from "./tool-pallettes/components/text-component-tool";
+import { VideoComponentTool } from "./tool-pallettes/components/video-component-tool";
+import { BentoBoxLayoutTool } from "./tool-pallettes/layouts/bento-box-layout-tool";
+import { FullScreenLayoutTool } from "./tool-pallettes/layouts/full-screen-layout-tool";
+import { PolaroidLayoutTool } from "./tool-pallettes/layouts/polaroid-layout-tool";
+import { PropertiesPanel } from "./tool-pallettes/properties/properties-panel";
 
 export const ToolPanel = () => {
   const { studioState, dispatch } = useStudio();
 
   return (
-    <div className="bg-white  shadow-2xl w-[300px] p-2 rounded-lg max-h-full overflow-y-auto">
+    <div className="bg-white  shadow-2xl w-[350px] p-2 rounded-lg max-h-full overflow-y-auto">
       <Accordion
         type="multiple"
         defaultValue={[
@@ -114,9 +118,9 @@ export const ToolPanel = () => {
             </span>
           </AccordionTrigger>
           <AccordionContent className="flex gap-2 flex-wrap p-2">
-            <LayoutIconFullScreen />
-            <LayoutIconPolaroid />
-            <LayoutIconBentoBox />
+            <FullScreenLayoutTool />
+            <PolaroidLayoutTool />
+            <BentoBoxLayoutTool />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="components-pallette">
@@ -126,8 +130,10 @@ export const ToolPanel = () => {
               Components
             </span>
           </AccordionTrigger>
-          <AccordionContent className="flex gap-2 flex-wrap p-2">
-            <span className="text-xs">TODO</span>
+          <AccordionContent className="flex gap-4 flex-wrap p-2">
+            <TextComponentTool />
+            <ImageComponentTool />
+            <VideoComponentTool />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="properties">
@@ -138,7 +144,7 @@ export const ToolPanel = () => {
             </span>
           </AccordionTrigger>
           <AccordionContent className="flex gap-2 flex-wrap p-2">
-            <span className="text-xs">TODO</span>
+            <PropertiesPanel />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

@@ -1,11 +1,11 @@
 import { PropsWithChildren, useReducer } from "react";
 import { initialStudioState } from "./studio-constants";
 import { StudioContext } from "./studio-context";
-import { StudioReducer } from "./studio-reducer";
+import { studioReducer } from "./studio-reducer";
 
 export const StudioProvider = ({ children }: PropsWithChildren) => {
-  const [studioState, dispatch] = useReducer<typeof StudioReducer>(
-    StudioReducer,
+  const [studioState, dispatch] = useReducer<typeof studioReducer>(
+    studioReducer,
     initialStudioState
   );
 
