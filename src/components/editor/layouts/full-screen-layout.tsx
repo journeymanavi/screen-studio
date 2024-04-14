@@ -6,9 +6,14 @@ import {
   SCREEN_LAYOUT_TYPE_FULL_SCREEN,
 } from "@/constants";
 import { useStudio } from "@/contexts/studio/studio-hook";
+import { makeNewComponent } from "@/contexts/studio/studio-reducer";
+import { cn } from "@/lib/utils";
 import { PropsWithChildren, useCallback } from "react";
 import { Dropzone, DropzoneProps } from "../../drag-n-drop/dropzone";
+import { ImageComponent } from "../components/image-component";
 import { TextComponent } from "../components/text-component";
+import { VideoComponent } from "../components/video-component";
+import { ScreenElement } from "../screen-element";
 
 export type FullScreenLayoutProps = PropsWithChildren;
 
@@ -28,12 +33,10 @@ export const FullScreenLayout = ({ children }: FullScreenLayoutProps) => {
     );
   }
 
-  const containerClassName = "w-full height-full flex-1";
+  const containerClassName = "w-full h-full flex-1";
 
   const handleComponentDrop = useCallback<DropzoneProps["onDrop"]>(
     (e) => {
-      console.log("FullScreenLayout.handleComponentDrop", e);
-
       const componentType = e.dataTransfer.getData(
         DRAGGABLE_TYPE_DATA_TRANSFER_KEY
       );
@@ -48,14 +51,34 @@ export const FullScreenLayout = ({ children }: FullScreenLayoutProps) => {
         e.stopPropagation();
       }
 
-      dispatch({
-        type: "ADD_COMPONENT_TO_FULL_SCREEN_LAYOUT",
-        payload: {
-          componentType,
-        },
-      });
+      const newComponent = makeNewComponent(componentType);
+
+      // console.log(
+      //   "FullScreenLayout.handleComponentDrop",
+      //   e,
+      //   componentType,
+      //   newComponent
+      // );
+
+      if (screenLayout) {
+        dispatch({
+          type: "UPDATE_ELEMENT_PROPS",
+          payload: {
+            elementId: screenLayout.id,
+            elementType: SCREEN_LAYOUT_TYPE_FULL_SCREEN,
+            props: {
+              component: newComponent,
+            },
+          },
+        });
+
+        dispatch({
+          type: "SELECT_ELEMENT",
+          payload: { element: newComponent },
+        });
+      }
     },
-    [dispatch]
+    [dispatch, screenLayout]
   );
 
   if (studioState.editor.mode === "EDITOR_MODE_EDIT") {
@@ -63,22 +86,31 @@ export const FullScreenLayout = ({ children }: FullScreenLayoutProps) => {
       return null;
     }
 
-    return (
-      <div className="flex-1 flex flex-col relative p-6">
-        <div className="absolute top-0 left-0 text-xs text-muted-foreground px-1 py-0.5">
-          Full Screen Layout
-        </div>
+    const component = screenLayout.props.component;
 
-        <Dropzone
-          onDrop={handleComponentDrop}
-          className="flex-1 relative border border-gray-500"
-        >
-          {screenLayout.component === null ? null : screenLayout.component
-              .type === "SCREEN_COMPONENT_TYPE_TEXT" ? (
-            <TextComponent element={screenLayout.component} />
-          ) : null}
+    let maybeComponentToRender: JSX.Element | null = null;
+
+    switch (component?.type) {
+      case "SCREEN_COMPONENT_TYPE_TEXT":
+        maybeComponentToRender = <TextComponent element={component} />;
+        break;
+      case "SCREEN_COMPONENT_TYPE_IMAGE":
+        maybeComponentToRender = <ImageComponent element={component} />;
+        break;
+      case "SCREEN_COMPONENT_TYPE_VIDEO":
+        maybeComponentToRender = <VideoComponent element={component} />;
+        break;
+      default:
+        maybeComponentToRender = null;
+        break;
+    }
+
+    return (
+      <ScreenElement element={screenLayout}>
+        <Dropzone onDrop={handleComponentDrop} className={cn("p-6")}>
+          {maybeComponentToRender}
         </Dropzone>
-      </div>
+      </ScreenElement>
     );
   }
 

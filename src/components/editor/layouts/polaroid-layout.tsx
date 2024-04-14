@@ -6,9 +6,19 @@ import {
   SCREEN_LAYOUT_TYPE_POLAROID,
 } from "@/constants";
 import { useStudio } from "@/contexts/studio/studio-hook";
-import { FocusEventHandler, PropsWithChildren, useCallback } from "react";
+import { makeNewComponent } from "@/contexts/studio/studio-reducer";
+import {
+  FocusEventHandler,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { Dropzone, DropzoneProps } from "../../drag-n-drop/dropzone";
+import { ImageComponent } from "../components/image-component";
 import { TextComponent } from "../components/text-component";
+import { VideoComponent } from "../components/video-component";
+import { ScreenElement } from "../screen-element";
 
 export type PolaroidLayoutProps = PropsWithChildren;
 
@@ -30,8 +40,6 @@ export const PolaroidLayout = ({ children }: PolaroidLayoutProps) => {
 
   const handleComponentDrop = useCallback<DropzoneProps["onDrop"]>(
     (e) => {
-      console.log("PolaroidLayout.handleComponentDrop", e);
-
       const componentType = e.dataTransfer.getData(
         DRAGGABLE_TYPE_DATA_TRANSFER_KEY
       );
@@ -46,6 +54,27 @@ export const PolaroidLayout = ({ children }: PolaroidLayoutProps) => {
         e.stopPropagation();
       }
 
+      const newComponent = makeNewComponent(componentType);
+
+      if (screenLayout) {
+        dispatch({
+          type: "UPDATE_ELEMENT_PROPS",
+          payload: {
+            elementId: screenLayout.id,
+            elementType: SCREEN_LAYOUT_TYPE_POLAROID,
+            props: {
+              title: screenLayout.props.title,
+              component: newComponent,
+            },
+          },
+        });
+
+        dispatch({
+          type: "SELECT_ELEMENT",
+          payload: { element: newComponent },
+        });
+      }
+
       dispatch({
         type: "ADD_COMPONENT_TO_POLAROID_LAYOUT",
         payload: {
@@ -53,48 +82,81 @@ export const PolaroidLayout = ({ children }: PolaroidLayoutProps) => {
         },
       });
     },
-    [dispatch]
+    [dispatch, screenLayout]
   );
 
   const updatePolaroidLayoutTitleText = useCallback<
     FocusEventHandler<HTMLDivElement>
   >(
     (e) => {
-      dispatch({
-        type: "UPDATE_TITLE_OF_POLAROID_LAYOUT",
-        payload: { titleText: e.currentTarget.textContent ?? "Edit me" },
-      });
+      if (screenLayout) {
+        dispatch({
+          type: "UPDATE_ELEMENT_PROPS",
+          payload: {
+            elementId: screenLayout.id,
+            elementType: SCREEN_LAYOUT_TYPE_POLAROID,
+            props: {
+              title: e.currentTarget.textContent ?? "Edit me",
+              component: screenLayout.props.component,
+            },
+          },
+        });
+      }
     },
-    [dispatch]
+    [dispatch, screenLayout]
   );
+
+  const layoutTitleRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (
+      layoutTitleRef.current &&
+      screenLayout !== null &&
+      layoutTitleRef.current.innerText !== screenLayout.props.title
+    ) {
+      layoutTitleRef.current.innerText = screenLayout.props.title;
+    }
+  }, [screenLayout]);
 
   if (studioState.editor.mode === "EDITOR_MODE_EDIT") {
     if (screenLayout === null) {
       return null;
     }
 
+    const component = screenLayout.props.component;
+
+    let maybeComponentToRender: JSX.Element | null = null;
+
+    switch (component?.type) {
+      case "SCREEN_COMPONENT_TYPE_TEXT":
+        maybeComponentToRender = <TextComponent element={component} />;
+        break;
+      case "SCREEN_COMPONENT_TYPE_IMAGE":
+        maybeComponentToRender = <ImageComponent element={component} />;
+        break;
+      case "SCREEN_COMPONENT_TYPE_VIDEO":
+        maybeComponentToRender = <VideoComponent element={component} />;
+        break;
+      default:
+        maybeComponentToRender = null;
+        break;
+    }
+
     return (
-      <div className="flex-1 flex flex-col relative p-6 gap-6">
-        <div className="absolute top-0 left-0 text-xs text-muted-foreground px-1 py-0.5">
-          Polaroid Layout
+      <ScreenElement element={screenLayout} className="p-6 flex">
+        <div className="flex-1 flex flex-col gap-4 relative">
+          <div
+            ref={layoutTitleRef}
+            className="border border-gray-500 text-2xl font-bold py-2 px-0.5 outline-none"
+            contentEditable
+            onBlur={updatePolaroidLayoutTitleText}
+          />
+          <div className="flex-1 border border-gray-500 relative">
+            <Dropzone onDrop={handleComponentDrop} className="p-6">
+              {maybeComponentToRender}
+            </Dropzone>
+          </div>
         </div>
-        <div
-          className="border border-gray-500 text-2xl font-bold py-2"
-          contentEditable
-          onBlur={updatePolaroidLayoutTitleText}
-        >
-          {screenLayout.title}
-        </div>
-        <Dropzone
-          onDrop={handleComponentDrop}
-          className="flex-1 relative border border-gray-500"
-        >
-          {screenLayout.component === null ? null : screenLayout.component
-              .type === "SCREEN_COMPONENT_TYPE_TEXT" ? (
-            <TextComponent element={screenLayout.component} />
-          ) : null}
-        </Dropzone>
-      </div>
+      </ScreenElement>
     );
   }
 

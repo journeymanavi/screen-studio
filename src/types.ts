@@ -8,7 +8,17 @@ import {
   SCREEN_LAYOUT_TYPE_FULL_SCREEN,
   SCREEN_LAYOUT_TYPE_POLAROID,
 } from "@/constants";
-import { CSSProperties, Dispatch } from "react";
+import { Dispatch } from "react";
+
+// Screen Element -------------------------------------------------------------
+
+type ScreenElement<
+  ScreenElementType extends ScreenComponentType | ScreenLayoutType
+> = {
+  id: string;
+  name: string;
+  type: ScreenElementType;
+};
 
 // Component ------------------------------------------------------------------
 
@@ -21,34 +31,36 @@ export type ScreenComponentType =
   | ScreenComponentTypeImage
   | ScreenComponentTypeVideo;
 
-export type ScreenComponentText = {
-  id: string;
-  name: string;
-  type: ScreenComponentTypeText;
-  style: CSSProperties;
-  props: {
-    innerText?: string;
-  };
+export type ScreenComponentTextProps = {
+  text?: string;
+  size?: number;
+  wight?: "thin" | "normal" | "bold";
+  fill?: string;
+  background?: string;
+  shadow?: boolean;
 };
 
-export type ScreenComponentImage = {
-  id: string;
-  name: string;
-  type: ScreenComponentTypeImage;
-  style: CSSProperties;
-  props: {
-    src?: string;
-  };
+export type ScreenComponentText = ScreenElement<ScreenComponentTypeText> & {
+  props: ScreenComponentTextProps;
 };
 
-export type ScreenComponentVideo = {
-  id: string;
-  name: string;
-  type: ScreenComponentTypeVideo;
-  style: CSSProperties;
-  props: {
-    src?: string;
-  };
+export type ScreenComponentImageProps = {
+  src?: string;
+  loop?: boolean;
+};
+
+export type ScreenComponentImage = ScreenElement<ScreenComponentTypeImage> & {
+  props: ScreenComponentImageProps;
+};
+
+export type ScreenComponentVideoProps = {
+  src?: string;
+  autoplay?: boolean;
+  loop?: boolean;
+};
+
+export type ScreenComponentVideo = ScreenElement<ScreenComponentTypeVideo> & {
+  props: ScreenComponentVideoProps;
 };
 
 export type ScreenComponent =
@@ -67,32 +79,56 @@ export type ScreenLayoutType =
   | ScreenLayoutTypePolaroid
   | ScreenLayoutTypeBentoBox;
 
-export type ScreenLayoutFullScreen = {
-  id: string;
-  name: string;
-  type: ScreenLayoutTypeFullScreen;
+export type ScreenLayoutFullScreenProps = {
   component: ScreenComponent | null;
 };
 
-export type ScreenLayoutPolaroid = {
-  id: string;
-  name: string;
-  type: ScreenLayoutTypePolaroid;
+export type ScreenLayoutFullScreen =
+  ScreenElement<ScreenLayoutTypeFullScreen> & {
+    props: ScreenLayoutFullScreenProps;
+  };
+
+export type ScreenLayoutPolaroidProps = {
   title: string;
   component: ScreenComponent | null;
 };
 
-export type ScreenLayoutBentoBox = {
-  id: string;
-  name: string;
-  type: ScreenLayoutTypeBentoBox;
+export type ScreenLayoutPolaroid = ScreenElement<ScreenLayoutTypePolaroid> & {
+  props: ScreenLayoutPolaroidProps;
+};
+
+export type ScreenLayoutBentoBoxProps = {
   components: ScreenComponent[];
+};
+
+export type ScreenLayoutBentoBox = ScreenElement<ScreenLayoutTypeBentoBox> & {
+  props: ScreenLayoutBentoBoxProps;
 };
 
 export type ScreenLayout =
   | ScreenLayoutFullScreen
   | ScreenLayoutPolaroid
   | ScreenLayoutBentoBox;
+
+// Screen Element Props -------------------------------------------------------
+
+export type ScreenElementType = ScreenLayoutType | ScreenComponentType;
+
+export type ScreenElementProps<
+  T extends ScreenElementType = ScreenElementType
+> = T extends ScreenLayoutTypeFullScreen
+  ? ScreenLayoutFullScreenProps
+  : T extends ScreenLayoutTypePolaroid
+  ? ScreenLayoutPolaroidProps
+  : T extends ScreenLayoutTypeBentoBox
+  ? ScreenLayoutBentoBoxProps
+  : T extends ScreenComponentTypeText
+  ? ScreenComponentTextProps
+  : T extends ScreenComponentTypeImage
+  ? ScreenComponentImageProps
+  : T extends ScreenComponentTypeVideo
+  ? ScreenComponentVideoProps
+  : never;
 
 // Screen ---------------------------------------------------------------------
 
@@ -104,6 +140,7 @@ export type ScreenAspectRatio =
   | ScreenAspectRatio4IsTo3;
 
 export type Screen = {
+  id: string;
   layout: ScreenLayout | null;
   aspectRatio: ScreenAspectRatio;
 };
@@ -167,9 +204,9 @@ export type StudioAction =
       };
     }
   | {
-      type: "SELECT_SCREEN_ELEMENT";
+      type: "UPDATE_SCREEN_ASPECT_RATIO";
       payload: {
-        element: ScreenComponent;
+        aspectRatio: ScreenAspectRatio;
       };
     }
   | {
@@ -199,27 +236,51 @@ export type StudioAction =
   | {
       type: "ADD_COMPONENT_TO_BENTO_BOX_LAYOUT";
       payload: {
-        componentType: ScreenComponentType;
         slotIndex: number;
+        componentType: ScreenComponentType;
       };
     }
   | {
-      type: "UPDATE_SELECTED_COMPONENT_STYLE";
+      type: "SELECT_ELEMENT";
       payload: {
-        style: CSSProperties;
+        element: Editor["selectedElement"];
       };
     }
   | {
-      type: "UPDATE_SELECTED_COMPONENT_PROPS";
-      payload: {
-        props: ScreenComponent["props"];
-      };
+      type: "UPDATE_ELEMENT_PROPS";
+      payload: UpdateElementPropsActionPayload;
+    };
+
+export type UpdateElementPropsActionPayload =
+  | {
+      elementId: string;
+      elementType: ScreenLayoutTypeFullScreen;
+      props: ScreenElementProps<ScreenLayoutTypeFullScreen>;
     }
   | {
-      type: "UPDATE_SCREEN_ASPECT_RATIO";
-      payload: {
-        aspectRatio: ScreenAspectRatio;
-      };
+      elementId: string;
+      elementType: ScreenLayoutTypePolaroid;
+      props: ScreenElementProps<ScreenLayoutTypePolaroid>;
+    }
+  | {
+      elementId: string;
+      elementType: ScreenLayoutTypeBentoBox;
+      props: ScreenElementProps<ScreenLayoutTypeBentoBox>;
+    }
+  | {
+      elementId: string;
+      elementType: ScreenComponentTypeText;
+      props: ScreenElementProps<ScreenComponentTypeText>;
+    }
+  | {
+      elementId: string;
+      elementType: ScreenComponentTypeImage;
+      props: ScreenElementProps<ScreenComponentTypeImage>;
+    }
+  | {
+      elementId: string;
+      elementType: ScreenComponentTypeVideo;
+      props: ScreenElementProps<ScreenComponentTypeVideo>;
     };
 
 export type StudioContextValue = {

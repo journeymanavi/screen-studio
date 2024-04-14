@@ -10,6 +10,7 @@ export const initialEditorModeState: EditorMode = "EDITOR_MODE_EDIT";
 export const initialScreenLayoutState: Screen["layout"] = null;
 export const initialScreenAspectRatio: Screen["aspectRatio"] = "16:9";
 export const initialScreenState: Screen = {
+  id: "",
   layout: initialScreenLayoutState,
   aspectRatio: initialScreenAspectRatio,
 };

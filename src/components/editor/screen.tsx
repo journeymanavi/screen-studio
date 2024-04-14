@@ -66,7 +66,9 @@ export const Screen = () => {
   return (
     <div className={cn("flex relative bg-gray-400", widthHeightClassName)}>
       {mode === "EDITOR_MODE_EDIT" ? (
-        <Dropzone onDrop={handleLayoutDrop}>{maybeLayout}</Dropzone>
+        <Dropzone className="p-6" onDrop={handleLayoutDrop}>
+          {maybeLayout}
+        </Dropzone>
       ) : (
         maybeLayout
       )}
