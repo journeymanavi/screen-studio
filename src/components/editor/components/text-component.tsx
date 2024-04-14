@@ -51,7 +51,7 @@ export const TextComponent = ({ element }: TextComponentProps) => {
         <div
           ref={textElementRef}
           style={getCSSPropertiesFromTextComponentProps(element.props)}
-          className="outline-none w-full h-full flex-1"
+          className="outline-none w-full h-full flex-1 flex"
           contentEditable="plaintext-only"
           onBlur={updateTextComponentProps}
         />
@@ -60,7 +60,10 @@ export const TextComponent = ({ element }: TextComponentProps) => {
   }
 
   return (
-    <div style={getCSSPropertiesFromTextComponentProps(element.props)}>
+    <div
+      className="w-full h-full flex-1 flex"
+      style={getCSSPropertiesFromTextComponentProps(element.props)}
+    >
       {element.props.text}
     </div>
   );
@@ -72,12 +75,13 @@ function getCSSPropertiesFromTextComponentProps({
   fill = "black",
   background = "transparent",
   shadow = false,
-  align = "left",
+  horizontalAlign = "left",
+  verticalAlign = "middle",
   paddingX = 0,
   paddingY = 0,
 }: ScreenComponentText["props"]): CSSProperties {
   const isGradientFill = /^linear-gradient/.test(fill);
-  const isImageBackground = /^url\([^)]+\)/.test(background);
+  const isImageBackground = /(^url\([^)]+\)|gradient)/.test(background);
   return {
     fontSize: size,
     lineHeight: 1,
@@ -91,8 +95,19 @@ function getCSSPropertiesFromTextComponentProps({
       : isImageBackground
       ? background
       : undefined,
-    textShadow: shadow ? "0px 0px 5px rgba(0,0,0,0.5)" : undefined,
-    textAlign: align,
+    textShadow: shadow ? "0px 0px 20px rgba(0,0,0,0.5)" : undefined,
+    justifyContent:
+      horizontalAlign === "left"
+        ? "flex-start"
+        : horizontalAlign === "right"
+        ? "flex-end"
+        : "center",
+    alignItems:
+      verticalAlign === "top"
+        ? "flex-start"
+        : verticalAlign === "bottom"
+        ? "flex-end"
+        : "center",
     paddingLeft: paddingX,
     paddingRight: paddingX,
     paddingTop: paddingY,

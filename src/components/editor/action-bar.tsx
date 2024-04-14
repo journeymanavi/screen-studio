@@ -1,5 +1,12 @@
+import { EDITOR_MODE_EDIT } from "@/constants";
 import { useStudio } from "@/contexts/studio/studio-hook";
-import { PlayIcon, Redo2Icon, Undo2Icon } from "lucide-react";
+import {
+  Edit3Icon,
+  FileDownIcon,
+  PlayIcon,
+  Redo2Icon,
+  Undo2Icon,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 
@@ -25,6 +32,7 @@ export const ActionBar = () => {
           onClick={() => {
             dispatch({ type: "UNDO" });
           }}
+          title="undo"
         >
           <Undo2Icon size={20} />
         </Button>
@@ -36,14 +44,45 @@ export const ActionBar = () => {
           onClick={() => {
             dispatch({ type: "REDO" });
           }}
+          title="redo"
         >
           <Redo2Icon size={20} />
         </Button>
       </div>
       <Separator orientation="vertical" />
       <div className="flex gap-2">
-        <Button size="icon" variant="outline" className="w-7 h-7">
-          <PlayIcon size={20} />
+        {studioState.editor.mode === EDITOR_MODE_EDIT ? (
+          <Button
+            size="icon"
+            variant="outline"
+            className="w-7 h-7"
+            title="preview"
+            onClick={() => {
+              dispatch({ type: "SWITCH_TO_PREVIEW_MODE" });
+            }}
+          >
+            <PlayIcon size={20} />
+          </Button>
+        ) : (
+          <Button
+            size="icon"
+            variant="outline"
+            className="w-7 h-7"
+            title="edit"
+            onClick={() => {
+              dispatch({ type: "SWITCH_TO_EDIT_MODE" });
+            }}
+          >
+            <Edit3Icon size={20} />
+          </Button>
+        )}
+        <Button
+          size="icon"
+          variant="outline"
+          className="w-7 h-7"
+          title="export"
+        >
+          <FileDownIcon size={20} />
         </Button>
       </div>
     </div>

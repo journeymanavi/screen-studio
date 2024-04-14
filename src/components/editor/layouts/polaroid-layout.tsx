@@ -7,22 +7,14 @@ import {
 } from "@/constants";
 import { useStudio } from "@/contexts/studio/studio-hook";
 import { makeNewComponent } from "@/contexts/studio/studio-reducer";
-import {
-  FocusEventHandler,
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useRef,
-} from "react";
+import { FocusEventHandler, useCallback, useEffect, useRef } from "react";
 import { Dropzone, DropzoneProps } from "../../drag-n-drop/dropzone";
 import { ImageComponent } from "../components/image-component";
 import { TextComponent } from "../components/text-component";
 import { VideoComponent } from "../components/video-component";
 import { ScreenElement } from "../screen-element";
 
-export type PolaroidLayoutProps = PropsWithChildren;
-
-export const PolaroidLayout = ({ children }: PolaroidLayoutProps) => {
+export const PolaroidLayout = () => {
   const { studioState, dispatch } = useStudio();
 
   const selectedScreen =
@@ -74,13 +66,6 @@ export const PolaroidLayout = ({ children }: PolaroidLayoutProps) => {
           payload: { element: newComponent },
         });
       }
-
-      dispatch({
-        type: "ADD_COMPONENT_TO_POLAROID_LAYOUT",
-        payload: {
-          componentType,
-        },
-      });
     },
     [dispatch, screenLayout]
   );
@@ -117,30 +102,30 @@ export const PolaroidLayout = ({ children }: PolaroidLayoutProps) => {
     }
   }, [screenLayout]);
 
+  if (screenLayout === null) {
+    return null;
+  }
+
+  const component = screenLayout.props.component;
+
+  let maybeComponentToRender: JSX.Element | null = null;
+
+  switch (component?.type) {
+    case "SCREEN_COMPONENT_TYPE_TEXT":
+      maybeComponentToRender = <TextComponent element={component} />;
+      break;
+    case "SCREEN_COMPONENT_TYPE_IMAGE":
+      maybeComponentToRender = <ImageComponent element={component} />;
+      break;
+    case "SCREEN_COMPONENT_TYPE_VIDEO":
+      maybeComponentToRender = <VideoComponent element={component} />;
+      break;
+    default:
+      maybeComponentToRender = null;
+      break;
+  }
+
   if (studioState.editor.mode === "EDITOR_MODE_EDIT") {
-    if (screenLayout === null) {
-      return null;
-    }
-
-    const component = screenLayout.props.component;
-
-    let maybeComponentToRender: JSX.Element | null = null;
-
-    switch (component?.type) {
-      case "SCREEN_COMPONENT_TYPE_TEXT":
-        maybeComponentToRender = <TextComponent element={component} />;
-        break;
-      case "SCREEN_COMPONENT_TYPE_IMAGE":
-        maybeComponentToRender = <ImageComponent element={component} />;
-        break;
-      case "SCREEN_COMPONENT_TYPE_VIDEO":
-        maybeComponentToRender = <VideoComponent element={component} />;
-        break;
-      default:
-        maybeComponentToRender = null;
-        break;
-    }
-
     return (
       <ScreenElement element={screenLayout} className="p-6 flex">
         <div className="flex-1 flex flex-col gap-4 relative">
@@ -160,5 +145,12 @@ export const PolaroidLayout = ({ children }: PolaroidLayoutProps) => {
     );
   }
 
-  return <div className="flex-1">{children}</div>;
+  return (
+    <div className="flex-1 flex flex-col gap-4 p-4">
+      <div ref={layoutTitleRef} className="text-2xl font-bold py-2 px-0.5" />
+      <div className="flex-1 relative overflow-hidden">
+        {maybeComponentToRender}
+      </div>
+    </div>
+  );
 };

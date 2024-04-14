@@ -37,7 +37,8 @@ export type ScreenComponentTextProps = {
   text?: string;
   size?: number;
   weight?: "thin" | "normal" | "bold";
-  align?: "left" | "center" | "right";
+  horizontalAlign?: "left" | "center" | "right";
+  verticalAlign?: "top" | "middle" | "bottom";
   fill?: string;
   background?: string;
   shadow?: boolean;
@@ -183,6 +184,12 @@ export type StudioAction =
       type: "REDO";
     }
   | {
+      type: "SWITCH_TO_PREVIEW_MODE";
+    }
+  | {
+      type: "SWITCH_TO_EDIT_MODE";
+    }
+  | {
       type: "SELECT_SCREEN";
       payload: {
         index: number;
@@ -216,31 +223,6 @@ export type StudioAction =
       type: "ADD_LAYOUT_TO_SELECTED_SCREEN";
       payload: {
         layoutType: ScreenLayoutType;
-      };
-    }
-  | {
-      type: "ADD_COMPONENT_TO_FULL_SCREEN_LAYOUT";
-      payload: {
-        componentType: ScreenComponentType;
-      };
-    }
-  | {
-      type: "ADD_COMPONENT_TO_POLAROID_LAYOUT";
-      payload: {
-        componentType: ScreenComponentType;
-      };
-    }
-  | {
-      type: "UPDATE_TITLE_OF_POLAROID_LAYOUT";
-      payload: {
-        titleText: string;
-      };
-    }
-  | {
-      type: "ADD_COMPONENT_TO_BENTO_BOX_LAYOUT";
-      payload: {
-        slotIndex: number;
-        componentType: ScreenComponentType;
       };
     }
   | {

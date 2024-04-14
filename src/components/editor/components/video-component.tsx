@@ -30,8 +30,10 @@ export const VideoComponent = ({ element }: VideoComponentProps) => {
   }
 
   return (
-    <img
+    <video
       src={element.props.src}
+      autoPlay={true}
+      loop={element.props.loop ?? false}
       className="w-full h-full object-cover object-center"
     />
   );

@@ -19,7 +19,14 @@ import {
   UpdateElementPropsActionPayload,
 } from "@/types";
 import { Tabs, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { AlignCenter, AlignLeft, AlignRight } from "lucide-react";
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  AlignVerticalJustifyCenterIcon,
+  AlignVerticalJustifyEndIcon,
+  AlignVerticalJustifyStartIcon,
+} from "lucide-react";
 import { FillPicker } from "./fill-picker";
 import { ImagePicker } from "./image-picker";
 import { VideoPicker } from "./video-picker";
@@ -189,16 +196,16 @@ export const PropertiesPanel = () => {
         </div>
         {/* align */}
         <div className="flex flex-col gap-1 ">
-          <p className="text-muted-foreground">Align</p>
+          <p className="text-muted-foreground">Horizontal Align</p>
           <Tabs
             onValueChange={(align: string) => {
               if (align === "left" || align === "center" || align === "right") {
                 handlePropChange(selectedElement.id, selectedElement.type, {
-                  align,
+                  horizontalAlign: align,
                 });
               }
             }}
-            value={selectedElement.props.align}
+            value={selectedElement.props.horizontalAlign}
           >
             <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit">
               <TabsTrigger
@@ -222,6 +229,40 @@ export const PropertiesPanel = () => {
             </TabsList>
           </Tabs>
         </div>
+        <div className="flex flex-col gap-1 ">
+          <p className="text-muted-foreground">Vertical Align</p>
+          <Tabs
+            onValueChange={(align: string) => {
+              if (align === "top" || align === "middle" || align === "bottom") {
+                handlePropChange(selectedElement.id, selectedElement.type, {
+                  verticalAlign: align,
+                });
+              }
+            }}
+            value={selectedElement.props.verticalAlign}
+          >
+            <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit">
+              <TabsTrigger
+                value="top"
+                className="w-1/3 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200  hover:bg-gray-50"
+              >
+                <AlignVerticalJustifyStartIcon size={18} />
+              </TabsTrigger>
+              <TabsTrigger
+                value="middle"
+                className="w-1/3 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200 hover:bg-gray-50"
+              >
+                <AlignVerticalJustifyCenterIcon size={18} />
+              </TabsTrigger>
+              <TabsTrigger
+                value="bottom"
+                className="w-1/3 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200 hover:bg-gray-50"
+              >
+                <AlignVerticalJustifyEndIcon size={18} />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
         {/* fill */}
         <div className="flex flex-col gap-1 ">
           <p className="text-muted-foreground">Fill</p>
@@ -235,6 +276,17 @@ export const PropertiesPanel = () => {
           />
         </div>
         {/* background */}
+        <div className="flex flex-col gap-1 ">
+          <p className="text-muted-foreground">Background</p>
+          <FillPicker
+            background={selectedElement.props.background ?? "white"}
+            setBackground={(background) => {
+              handlePropChange(selectedElement.id, selectedElement.type, {
+                background,
+              });
+            }}
+          />
+        </div>
         {/* shadow */}
         <div className="flex flex-col gap-1 ">
           <p className="text-muted-foreground">Shadow</p>

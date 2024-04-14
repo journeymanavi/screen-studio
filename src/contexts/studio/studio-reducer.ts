@@ -1,4 +1,6 @@
 import {
+  EDITOR_MODE_EDIT,
+  EDITOR_MODE_PREVIEW,
   SCREEN_COMPONENT_TYPE_IMAGE,
   SCREEN_COMPONENT_TYPE_TEXT,
   SCREEN_COMPONENT_TYPE_VIDEO,
@@ -65,6 +67,18 @@ const redo = (state: StudioState): StudioState => {
   };
   return updatedState;
 };
+
+function switchMode(state: StudioState, mode: "preview" | "edit"): StudioState {
+  if (state.editor.mode === EDITOR_MODE_EDIT && mode === "preview") {
+    return { ...state, editor: { ...state.editor, mode: EDITOR_MODE_PREVIEW } };
+  }
+
+  if (state.editor.mode === EDITOR_MODE_PREVIEW && mode === "edit") {
+    return { ...state, editor: { ...state.editor, mode: EDITOR_MODE_EDIT } };
+  }
+
+  return state;
+}
 
 const selectScreen = (
   state: StudioState,
@@ -274,12 +288,13 @@ export const makeNewComponent = (
         type,
         props: {
           text: "Edit me...",
-          background: "transparent",
           fill: "black",
-          shadow: true,
+          background: "white",
+          shadow: false,
           size: 48,
           weight: "normal",
-          align: "left",
+          horizontalAlign: "center",
+          verticalAlign: "middle",
           paddingX: 0,
           paddingY: 0,
         },
@@ -436,6 +451,10 @@ export const studioReducer: Reducer<StudioState, StudioAction> = (
       return undo(state);
     case "REDO":
       return redo(state);
+    case "SWITCH_TO_PREVIEW_MODE":
+      return switchMode(state, "preview");
+    case "SWITCH_TO_EDIT_MODE":
+      return switchMode(state, "edit");
     case "SELECT_SCREEN":
       return selectScreen(state, action.payload.index);
     case "ADD_SCREEN":
