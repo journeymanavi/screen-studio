@@ -1,6 +1,7 @@
 import {
   SCREEN_COMPONENT_TYPE_IMAGE,
   SCREEN_COMPONENT_TYPE_TEXT,
+  SCREEN_COMPONENT_TYPE_VIDEO,
   SCREEN_LAYOUT_TYPE_FULL_SCREEN,
   SCREEN_LAYOUT_TYPE_POLAROID,
 } from "@/constants";
@@ -348,7 +349,8 @@ function updateElementProps(
 
   if (
     elementType === SCREEN_COMPONENT_TYPE_TEXT ||
-    elementType === SCREEN_COMPONENT_TYPE_IMAGE
+    elementType === SCREEN_COMPONENT_TYPE_IMAGE ||
+    elementType === SCREEN_COMPONENT_TYPE_VIDEO
   ) {
     if (state.editor.selectedElement?.type !== elementType) {
       throw new Error(

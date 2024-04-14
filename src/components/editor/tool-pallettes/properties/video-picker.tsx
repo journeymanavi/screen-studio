@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ArrowRightCircleIcon, LinkIcon, PlayCircleIcon } from "lucide-react";
 
 const videos = [
@@ -25,7 +30,11 @@ const videos = [
   ],
 ];
 
-export const VideoPicker = () => {
+export type VideoPickerProps = {
+  onSelect: (url: string) => void;
+};
+
+export const VideoPicker = ({ onSelect }: VideoPickerProps) => {
   return (
     <div>
       <Dialog>
@@ -40,13 +49,20 @@ export const VideoPicker = () => {
         <DialogContent>
           <div className="pt-4 flex gap-4 flex-wrap items-start">
             {videos.map(([videoURL], index) => (
-              <div key={index} className="flex justify-center items-center">
-                <video
-                  className="w-[100px] h-[100px] bg-gray-500  hover:outline outline-gray-700 p-1 rounded-md cursor-pointer"
-                  src={videoURL}
-                ></video>
-                <PlayCircleIcon className="absolute text-gray-50 drop-shadow" />
-              </div>
+              <DialogClose asChild key={index}>
+                <button
+                  className="flex justify-center items-center"
+                  onClick={() => {
+                    onSelect(videoURL);
+                  }}
+                >
+                  <video
+                    className="w-[100px] h-[100px] bg-gray-500  hover:outline outline-gray-700 p-1 rounded-md cursor-pointer"
+                    src={videoURL}
+                  ></video>
+                  <PlayCircleIcon className="absolute text-gray-50 drop-shadow" />
+                </button>
+              </DialogClose>
             ))}
           </div>
           <hr />

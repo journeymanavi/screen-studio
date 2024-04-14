@@ -116,7 +116,13 @@ export const PropertiesPanel = () => {
             }}
           />
         ) : (
-          <VideoPicker />
+          <VideoPicker
+            onSelect={(url) => {
+              handlePropChange(selectedElement.id, selectedElement.type, {
+                src: url,
+              });
+            }}
+          />
         )}
       </div>
     );

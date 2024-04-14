@@ -1,50 +1,31 @@
 import { useStudio } from "@/contexts/studio/studio-hook";
-import { cn } from "@/lib/utils";
 import { ScreenComponentVideo } from "@/types";
-import { MouseEventHandler, useCallback } from "react";
+import { VideoIcon } from "lucide-react";
+import { ScreenElement } from "../screen-element";
 
 export type VideoComponentProps = {
   element: ScreenComponentVideo;
 };
 
 export const VideoComponent = ({ element }: VideoComponentProps) => {
-  const { studioState, dispatch } = useStudio();
-
-  const updateSelectedElement: MouseEventHandler<HTMLDivElement> = useCallback(
-    (e) => {
-      e.stopPropagation();
-      if (
-        studioState.editor.selectedElement === null ||
-        studioState.editor.selectedElement.id !== element.id
-      ) {
-        dispatch({
-          type: "SELECT_ELEMENT",
-          payload: {
-            element,
-          },
-        });
-      }
-    },
-    [dispatch, element, studioState.editor.selectedElement]
-  );
+  const { studioState } = useStudio();
 
   if (studioState.editor.mode === "EDITOR_MODE_EDIT") {
-    if (!element.props.src) {
-      return null;
-    }
-
     return (
-      <div onClick={updateSelectedElement} className="w-full h-full">
-        <video
-          src={element.props.src}
-          autoPlay={true}
-          loop={element.props.loop ?? false}
-          className={cn("w-full h-full object-cover object-center", {
-            "outline-1 outline-yellow-300 outline-dashed":
-              studioState.editor.selectedElement?.id === element.id,
-          })}
-        />
-      </div>
+      <ScreenElement element={element}>
+        {!element.props.src ? (
+          <div className="h-full flex justify-center items-center w-full">
+            <VideoIcon className="text-gray-500" size={52} />
+          </div>
+        ) : (
+          <video
+            src={element.props.src}
+            autoPlay={true}
+            loop={element.props.loop ?? false}
+            className="w-full h-full object-cover object-center"
+          />
+        )}
+      </ScreenElement>
     );
   }
 
