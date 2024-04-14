@@ -1,4 +1,5 @@
 import {
+  SCREEN_COMPONENT_TYPE_IMAGE,
   SCREEN_COMPONENT_TYPE_TEXT,
   SCREEN_LAYOUT_TYPE_FULL_SCREEN,
   SCREEN_LAYOUT_TYPE_POLAROID,
@@ -260,50 +261,6 @@ const addLayoutToSelectedScreen = (
   return updatedState;
 };
 
-// const updateTitleOfPolaroidLayout = (
-//   state: StudioState,
-//   titleText: string
-// ): StudioState => {
-//   const selectedScreenIndex = state.editor.selectedScreen;
-//   const selectedScreen = state.editor.screens[selectedScreenIndex];
-//   const currentLayout = selectedScreen.layout;
-
-//   if (
-//     currentLayout === null ||
-//     currentLayout.type !== "SCREEN_LAYOUT_TYPE_POLAROID"
-//   ) {
-//     throw new Error(
-//       "Can not update title of layout that's not a Polaroid layout."
-//     );
-//   }
-
-//   const updatedLayout: ScreenLayout = { ...currentLayout, title: titleText };
-//   const updatedScreen: Screen = {
-//     ...state.editor.screens[selectedScreenIndex],
-//     layout: updatedLayout,
-//   };
-//   const updatedScreens = state.editor.screens.map((screen, index) =>
-//     index === selectedScreenIndex ? updatedScreen : screen
-//   );
-//   const updatedEditor: Editor = {
-//     ...state.editor,
-//     screens: updatedScreens,
-//   };
-
-//   const updatedEditorHistory = addEditorStateToHistory(
-//     state.editorHistory,
-//     updatedEditor
-//   );
-
-//   const updatedState: StudioState = {
-//     ...state,
-//     editor: updatedEditor,
-//     editorHistory: updatedEditorHistory,
-//   };
-
-//   return updatedState;
-// };
-
 export const makeNewComponent = (
   type: ScreenComponentType
 ): ScreenComponent => {
@@ -320,7 +277,10 @@ export const makeNewComponent = (
           fill: "black",
           shadow: true,
           size: 48,
-          wight: "normal",
+          weight: "normal",
+          align: "left",
+          paddingX: 0,
+          paddingY: 0,
         },
       };
     case "SCREEN_COMPONENT_TYPE_IMAGE":
@@ -330,57 +290,10 @@ export const makeNewComponent = (
         id,
         name: "Video",
         type,
-        props: { src: "", autoplay: true, loop: true },
+        props: { src: "", loop: true },
       };
   }
 };
-
-// const addComponentToFullScreenLayout = (
-//   state: StudioState,
-//   componentType: ScreenComponentType
-// ): StudioState => {
-//   const selectedScreenIndex = state.editor.selectedScreen;
-//   const selectedScreen = state.editor.screens[selectedScreenIndex];
-//   const currentLayout = selectedScreen.layout;
-
-//   if (
-//     currentLayout === null ||
-//     currentLayout.type !== "SCREEN_LAYOUT_TYPE_FULL_SCREEN"
-//   ) {
-//     throw new Error(
-//       "Can not add component to a layout that's not a Full Screen layout."
-//     );
-//   }
-
-//   const updatedLayout: typeof currentLayout = {
-//     ...currentLayout,
-//     component: makeNewComponent(componentType),
-//   };
-//   const updatedScreen: Screen = {
-//     ...state.editor.screens[selectedScreenIndex],
-//     layout: updatedLayout,
-//   };
-//   const updatedScreens = state.editor.screens.map((screen, index) =>
-//     index === selectedScreenIndex ? updatedScreen : screen
-//   );
-//   const updatedEditor: Editor = {
-//     ...state.editor,
-//     screens: updatedScreens,
-//   };
-
-//   const updatedEditorHistory = addEditorStateToHistory(
-//     state.editorHistory,
-//     updatedEditor
-//   );
-
-//   const updatedState: StudioState = {
-//     ...state,
-//     editor: updatedEditor,
-//     editorHistory: updatedEditorHistory,
-//   };
-
-//   return updatedState;
-// };
 
 const selectScreenElement = (
   state: StudioState,
@@ -400,7 +313,7 @@ function updateElementProps(
   state: StudioState,
   payload: UpdateElementPropsActionPayload
 ): StudioState {
-  console.log("updateSelectedElementProps", state, payload);
+  // console.log("updateSelectedElementProps", state, payload);
   const { elementId, elementType, props } = payload;
   const selectedScreen = state.editor.screens[state.editor.selectedScreen];
 
@@ -409,8 +322,12 @@ function updateElementProps(
   }
 
   let updatedSelectedScreen = { ...selectedScreen };
+  let updatedSelectedElement = state.editor.selectedElement;
 
-  if (elementType === SCREEN_LAYOUT_TYPE_FULL_SCREEN) {
+  if (
+    elementType === SCREEN_LAYOUT_TYPE_FULL_SCREEN ||
+    elementType === SCREEN_LAYOUT_TYPE_POLAROID
+  ) {
     if (selectedScreen.layout?.type !== elementType) {
       throw new Error(
         `Invalid Element Type ${elementType} passed for updating element props!`
@@ -426,36 +343,23 @@ function updateElementProps(
           ...props,
         },
       },
-    };
+    } as Screen;
   }
 
-  if (elementType === SCREEN_LAYOUT_TYPE_POLAROID) {
-    if (selectedScreen.layout?.type !== elementType) {
-      throw new Error(
-        `Invalid Element Type ${elementType} passed for updating element props!`
-      );
-    }
-
-    updatedSelectedScreen = {
-      ...selectedScreen,
-      layout: {
-        ...selectedScreen.layout,
-        props: {
-          ...selectedScreen.layout?.props,
-          ...props,
-        },
-      },
-    };
-  }
-
-  if (elementType === SCREEN_COMPONENT_TYPE_TEXT) {
+  if (
+    elementType === SCREEN_COMPONENT_TYPE_TEXT ||
+    elementType === SCREEN_COMPONENT_TYPE_IMAGE
+  ) {
     if (state.editor.selectedElement?.type !== elementType) {
       throw new Error(
         `Invalid Element Type ${elementType} passed for updating element props!`
       );
     }
 
-    if (selectedScreen.layout.type === SCREEN_LAYOUT_TYPE_FULL_SCREEN) {
+    if (
+      selectedScreen.layout.type === SCREEN_LAYOUT_TYPE_FULL_SCREEN ||
+      selectedScreen.layout.type === SCREEN_LAYOUT_TYPE_POLAROID
+    ) {
       const targetComponent = selectedScreen.layout.props.component;
 
       if (targetComponent === null) {
@@ -471,39 +375,13 @@ function updateElementProps(
         );
       }
 
-      updatedSelectedScreen = {
-        ...selectedScreen,
-        layout: {
-          ...selectedScreen.layout,
-          props: {
-            ...selectedScreen.layout?.props,
-            component: {
-              ...targetComponent,
-              props: {
-                ...targetComponent.props,
-                ...props,
-              },
-            },
-          },
+      const updatedComponent = {
+        ...targetComponent,
+        props: {
+          ...targetComponent.props,
+          ...props,
         },
-      };
-    }
-
-    if (selectedScreen.layout.type === SCREEN_LAYOUT_TYPE_POLAROID) {
-      const targetComponent = selectedScreen.layout.props.component;
-
-      if (targetComponent === null) {
-        return state;
-      }
-
-      if (
-        targetComponent.id !== elementId ||
-        targetComponent.type !== elementType
-      ) {
-        throw new Error(
-          `Invalid Element Type ${elementType} with id ${elementId} passed for updating element props!`
-        );
-      }
+      } as ScreenComponent;
 
       updatedSelectedScreen = {
         ...selectedScreen,
@@ -511,16 +389,12 @@ function updateElementProps(
           ...selectedScreen.layout,
           props: {
             ...selectedScreen.layout?.props,
-            component: {
-              ...targetComponent,
-              props: {
-                ...targetComponent.props,
-                ...props,
-              },
-            },
+            component: updatedComponent,
           },
         },
-      };
+      } as Screen;
+
+      updatedSelectedElement = updatedComponent;
     }
   }
 
@@ -530,18 +404,8 @@ function updateElementProps(
   updatedEditor = {
     ...state.editor,
     screens: updatedScreens,
+    selectedElement: updatedSelectedElement,
   };
-
-  // const updatedSelectedElement = {
-  //   ...state.editor.selectedElement,
-  //   type: elementType,
-  //   props: {
-  //     ...state.editor.selectedElement.props,
-  //     ...props,
-  //   },
-  // };
-
-  // console.log({ updatedSelectedElement });
 
   const updatedEditorHistory = addEditorStateToHistory(
     state.editorHistory,
@@ -563,7 +427,7 @@ export const studioReducer: Reducer<StudioState, StudioAction> = (
   state = initialStudioState,
   action
 ) => {
-  console.log("studioReducer", action);
+  // console.log("studioReducer", action);
 
   switch (action.type) {
     case "UNDO":
@@ -584,13 +448,6 @@ export const studioReducer: Reducer<StudioState, StudioAction> = (
       return updateScreenAspectRatio(state, action.payload.aspectRatio);
     case "ADD_LAYOUT_TO_SELECTED_SCREEN":
       return addLayoutToSelectedScreen(state, action.payload.layoutType);
-    // case "UPDATE_TITLE_OF_POLAROID_LAYOUT":
-    //   return updateTitleOfPolaroidLayout(state, action.payload.titleText);
-    // case "ADD_COMPONENT_TO_FULL_SCREEN_LAYOUT":
-    //   return addComponentToFullScreenLayout(
-    //     state,
-    //     action.payload.componentType
-    //   );
     case "SELECT_ELEMENT":
       return selectScreenElement(state, action.payload.element);
     case "UPDATE_ELEMENT_PROPS":

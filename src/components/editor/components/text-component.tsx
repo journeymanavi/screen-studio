@@ -51,7 +51,7 @@ export const TextComponent = ({ element }: TextComponentProps) => {
         <div
           ref={textElementRef}
           style={getCSSPropertiesFromTextComponentProps(element.props)}
-          className="outline-none w-full h-full flex-1 flex justify-center items-center"
+          className="outline-none w-full h-full flex-1"
           contentEditable="plaintext-only"
           onBlur={updateTextComponentProps}
         />
@@ -68,16 +68,20 @@ export const TextComponent = ({ element }: TextComponentProps) => {
 
 function getCSSPropertiesFromTextComponentProps({
   size = 24,
-  wight = "normal",
+  weight = "normal",
   fill = "black",
   background = "transparent",
   shadow = false,
+  align = "left",
+  paddingX = 0,
+  paddingY = 0,
 }: ScreenComponentText["props"]): CSSProperties {
   const isGradientFill = /^linear-gradient/.test(fill);
   const isImageBackground = /^url\([^)]+\)/.test(background);
   return {
     fontSize: size,
-    fontWeight: wight,
+    lineHeight: 1,
+    fontWeight: weight === "thin" ? "100" : weight,
     color: isGradientFill ? "transparent" : fill,
     backgroundClip: isGradientFill ? "text" : undefined,
     backgroundColor:
@@ -88,5 +92,10 @@ function getCSSPropertiesFromTextComponentProps({
       ? background
       : undefined,
     textShadow: shadow ? "0px 0px 5px rgba(0,0,0,0.5)" : undefined,
+    textAlign: align,
+    paddingLeft: paddingX,
+    paddingRight: paddingX,
+    paddingTop: paddingY,
+    paddingBottom: paddingY,
   };
 }

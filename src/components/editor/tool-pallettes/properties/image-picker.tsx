@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ArrowRightCircleIcon, LinkIcon } from "lucide-react";
 
 const images = [
@@ -41,7 +46,11 @@ const images = [
   ],
 ];
 
-export const ImagePicker = () => {
+export type ImagePickerProps = {
+  onSelect: (url: string) => void;
+};
+
+export const ImagePicker = ({ onSelect }: ImagePickerProps) => {
   return (
     <div>
       <Dialog>
@@ -49,25 +58,31 @@ export const ImagePicker = () => {
           <Button size="sm" variant="secondary">
             <span className="inline-flex items-center gap-2">
               <LinkIcon size={16} />
-              Pick Image URL
+              Pick Image
             </span>
           </Button>
         </DialogTrigger>
         <DialogContent>
           <div className="pt-4 flex gap-4 flex-wrap items-start">
             {images.map(([imageURL], index) => (
-              <div
-                key={index}
-                style={{
-                  position: "relative",
-                  width: 100,
-                  height: 100,
-                  backgroundImage: `url(${imageURL})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-                className="flex justify-center items-end text-center rounded-md cursor-pointer hover:outline outline-gray-700"
-              ></div>
+              <DialogClose asChild key={index}>
+                <button
+                  type="button"
+                  value={imageURL}
+                  style={{
+                    position: "relative",
+                    width: 100,
+                    height: 100,
+                    backgroundImage: `url(${imageURL})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                  className="flex justify-center items-end text-center rounded-md cursor-pointer hover:outline outline-gray-700"
+                  onClick={() => {
+                    onSelect(imageURL);
+                  }}
+                />
+              </DialogClose>
             ))}
           </div>
           <hr />

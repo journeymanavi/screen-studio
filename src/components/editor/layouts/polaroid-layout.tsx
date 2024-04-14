@@ -146,11 +146,11 @@ export const PolaroidLayout = ({ children }: PolaroidLayoutProps) => {
         <div className="flex-1 flex flex-col gap-4 relative">
           <div
             ref={layoutTitleRef}
-            className="border border-gray-500 text-2xl font-bold py-2 px-0.5 outline-none"
+            className="border border-gray-300 text-2xl font-bold py-2 px-0.5 outline-none"
             contentEditable
             onBlur={updatePolaroidLayoutTitleText}
           />
-          <div className="flex-1 border border-gray-500 relative">
+          <div className="flex-1 border border-gray-300 relative">
             <Dropzone onDrop={handleComponentDrop} className="p-6">
               {maybeComponentToRender}
             </Dropzone>

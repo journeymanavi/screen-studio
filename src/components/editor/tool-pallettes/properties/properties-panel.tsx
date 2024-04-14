@@ -1,524 +1,336 @@
 "use client";
+import { Input } from "@/components/ui/input";
 import {
+  ASPECT_RATIO_16_IS_TO_9,
+  ASPECT_RATIO_4_IS_TO_3,
+  SCREEN_COMPONENT_TYPE_IMAGE,
+  SCREEN_COMPONENT_TYPE_TEXT,
+  SCREEN_COMPONENT_TYPE_VIDEO,
   SCREEN_LAYOUT_TYPE_BENTO_BOX,
   SCREEN_LAYOUT_TYPE_FULL_SCREEN,
   SCREEN_LAYOUT_TYPE_POLAROID,
 } from "@/constants";
 import { useStudio } from "@/contexts/studio/studio-hook";
+import {
+  ScreenAspectRatio16IsTo9,
+  ScreenAspectRatio4IsTo3,
+  ScreenComponentType,
+  ScreenElementProps,
+  UpdateElementPropsActionPayload,
+} from "@/types";
+import { Tabs, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import { AlignCenter, AlignLeft, AlignRight } from "lucide-react";
+import { FillPicker } from "./fill-picker";
+import { ImagePicker } from "./image-picker";
+import { VideoPicker } from "./video-picker";
 
 export const PropertiesPanel = () => {
-  const { studioState /*, dispatch*/ } = useStudio();
-
+  const { studioState, dispatch } = useStudio();
+  const selectedScreen =
+    studioState.editor.screens[studioState.editor.selectedScreen];
   const selectedElement = studioState.editor.selectedElement;
 
   if (
-    selectedElement === null ||
-    selectedElement.type === SCREEN_LAYOUT_TYPE_FULL_SCREEN ||
-    selectedElement.type === SCREEN_LAYOUT_TYPE_POLAROID ||
-    selectedElement.type === SCREEN_LAYOUT_TYPE_BENTO_BOX
+    selectedElement !== null &&
+    (selectedElement.type === SCREEN_LAYOUT_TYPE_FULL_SCREEN ||
+      selectedElement.type === SCREEN_LAYOUT_TYPE_POLAROID ||
+      selectedElement.type === SCREEN_LAYOUT_TYPE_BENTO_BOX)
   ) {
     return null;
   }
 
-  // const handleStyleChanges = (e: { target: { id: string; value: string } }) => {
-  //   const styleSettings = e.target.id;
-  //   const value = e.target.value;
-  //   const styleObject = {
-  //     [styleSettings]: value,
-  //   };
+  const handleScreenAspectRatioChange = (
+    aspectRatio: ScreenAspectRatio16IsTo9 | ScreenAspectRatio4IsTo3
+  ) => {
+    dispatch({
+      type: "UPDATE_SCREEN_ASPECT_RATIO",
+      payload: {
+        aspectRatio,
+      },
+    });
+  };
 
-  //   dispatch({
-  //     type: "UPDATE_SELECTED_COMPONENT_STYLE",
-  //     payload: {
-  //       style: {
-  //         ...selectedElement.style,
-  //         ...styleObject,
-  //       },
-  //     },
-  //   });
-  // };
+  const handlePropChange = (
+    elementId: string,
+    elementType: ScreenComponentType,
+    props: ScreenElementProps<ScreenComponentType>
+  ) => {
+    dispatch({
+      type: "UPDATE_ELEMENT_PROPS",
+      payload: {
+        elementId,
+        elementType,
+        props,
+      } as UpdateElementPropsActionPayload,
+    });
+  };
 
-  // const handleSourcePropChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-  //   dispatch({
-  //     type: "UPDATE_SELECTED_COMPONENT_PROPS",
-  //     payload: {
-  //       props: {
-  //         ...selectedElement.props,
-  //         src: e.target.value,
-  //       },
-  //     },
-  //   });
-  // };
+  if (selectedElement === null) {
+    return (
+      <div className="flex flex-col gap-1">
+        <p className="text-muted-foreground">Screen Aspect Ratio</p>
+        <Tabs
+          onValueChange={(aspectRatio: string) => {
+            if (
+              aspectRatio === ASPECT_RATIO_16_IS_TO_9 ||
+              aspectRatio === ASPECT_RATIO_4_IS_TO_3
+            ) {
+              handleScreenAspectRatioChange(aspectRatio);
+            }
+          }}
+          value={selectedScreen.aspectRatio}
+        >
+          <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit">
+            <TabsTrigger
+              value={ASPECT_RATIO_16_IS_TO_9}
+              className="w-1/2 h-10 p-0 data-[state=active]:bg-gray-200"
+            >
+              16:9
+            </TabsTrigger>
+            <TabsTrigger
+              value={ASPECT_RATIO_4_IS_TO_3}
+              className="w-1/2 h-10 p-0 data-[state=active]:bg-gray-200"
+            >
+              4:3
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+    );
+  }
 
-  return null;
+  if (
+    selectedElement !== null &&
+    (selectedElement.type === SCREEN_COMPONENT_TYPE_IMAGE ||
+      selectedElement.type === SCREEN_COMPONENT_TYPE_VIDEO)
+  ) {
+    return (
+      <div className="flex flex-col gap-1">
+        <p className="text-muted-foreground">Source</p>
+        {selectedElement.type === SCREEN_COMPONENT_TYPE_IMAGE ? (
+          <ImagePicker
+            onSelect={(url) => {
+              handlePropChange(selectedElement.id, selectedElement.type, {
+                src: url,
+              });
+            }}
+          />
+        ) : (
+          <VideoPicker />
+        )}
+      </div>
+    );
+  }
 
-  // return (
-  //   <Accordion
-  //     type="multiple"
-  //     className="w-full"
-  //     defaultValue={["Typography", "Dimensions", "Decorations", "Flexbox"]}
-  //   >
-  //     {(selectedElement.type === "SCREEN_COMPONENT_TYPE_IMAGE" ||
-  //       selectedElement.type === "SCREEN_COMPONENT_TYPE_VIDEO") && (
-  //       <AccordionItem value="Media" className="py-0 border-y-[1px]">
-  //         <AccordionTrigger className="!no-underline">Media</AccordionTrigger>
-  //         <AccordionContent className="flex flex-col gap-2 ">
-  //           <div className="flex flex-col gap-2">
-  //             <p className="text-muted-foreground">Source</p>
-  //             <Input
-  //               onChange={handleSourcePropChange}
-  //               value={selectedElement.style.fontFamily}
-  //             />
-  //           </div>
-  //         </AccordionContent>
-  //       </AccordionItem>
-  //     )}
-  //     <AccordionItem value="Typography" className="py-0 border-y-[1px]">
-  //       <AccordionTrigger className="!no-underline">
-  //         Typography
-  //       </AccordionTrigger>
-  //       <AccordionContent className="px-2 flex flex-col gap-2 ">
-  //         <div className="flex flex-col gap-2 ">
-  //           <p className="text-muted-foreground">Text Align</p>
-  //           <Tabs
-  //             onValueChange={(e) =>
-  //               handleStyleChanges({
-  //                 target: {
-  //                   id: "textAlign",
-  //                   value: e,
-  //                 },
-  //               })
-  //             }
-  //             value={selectedElement.style.textAlign}
-  //           >
-  //             <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit gap-4">
-  //               <TabsTrigger
-  //                 value="left"
-  //                 className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //               >
-  //                 <AlignLeft size={18} />
-  //               </TabsTrigger>
-  //               <TabsTrigger
-  //                 value="right"
-  //                 className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //               >
-  //                 <AlignRight size={18} />
-  //               </TabsTrigger>
-  //               <TabsTrigger
-  //                 value="center"
-  //                 className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //               >
-  //                 <AlignCenter size={18} />
-  //               </TabsTrigger>
-  //               <TabsTrigger
-  //                 value="justify"
-  //                 className="w-10 h-10 p-0 data-[state=active]:bg-muted "
-  //               >
-  //                 <AlignJustify size={18} />
-  //               </TabsTrigger>
-  //             </TabsList>
-  //           </Tabs>
-  //         </div>
-  //         <div className="flex flex-col gap-2">
-  //           <p className="text-muted-foreground">Font Family</p>
-  //           <Input
-  //             id="fontFamily"
-  //             onChange={handleStyleChanges}
-  //             value={selectedElement.style.fontFamily}
-  //           />
-  //         </div>
-  //         <div className="flex flex-col gap-2">
-  //           <p className="text-muted-foreground">Color</p>
-  //           <Input
-  //             id="color"
-  //             onChange={handleStyleChanges}
-  //             value={selectedElement.style.color}
-  //           />
-  //         </div>
-  //         <div className="flex gap-4">
-  //           <div>
-  //             <Label className="text-muted-foreground">Weight</Label>
-  //             <Select
-  //               onValueChange={(e) =>
-  //                 handleStyleChanges({
-  //                   target: {
-  //                     id: "font-weight",
-  //                     value: e,
-  //                   },
-  //                 })
-  //               }
-  //             >
-  //               <SelectTrigger className="w-[180px]">
-  //                 <SelectValue placeholder="Select a weight" />
-  //               </SelectTrigger>
-  //               <SelectContent>
-  //                 <SelectGroup>
-  //                   <SelectLabel>Font Weights</SelectLabel>
-  //                   <SelectItem value="bold">Bold</SelectItem>
-  //                   <SelectItem value="normal">Regular</SelectItem>
-  //                   <SelectItem value="lighter">Light</SelectItem>
-  //                 </SelectGroup>
-  //               </SelectContent>
-  //             </Select>
-  //           </div>
-  //           <div>
-  //             <Label className="text-muted-foreground">Size</Label>
-  //             <Input
-  //               placeholder="px"
-  //               id="fontSize"
-  //               onChange={handleStyleChanges}
-  //               value={selectedElement.style.fontSize}
-  //             />
-  //           </div>
-  //         </div>
-  //       </AccordionContent>
-  //     </AccordionItem>
-  //     <AccordionItem value="Dimensions" className=" py-0">
-  //       <AccordionTrigger className="!no-underline">
-  //         Dimensions
-  //       </AccordionTrigger>
-  //       <AccordionContent>
-  //         <div className="px-2 flex flex-col gap-4">
-  //           <div className="flex flex-col gap-2">
-  //             <div className="flex gap-4 flex-col">
-  //               <div className="flex gap-4">
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Height</Label>
-  //                   <Input
-  //                     id="height"
-  //                     placeholder="px"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.height}
-  //                   />
-  //                 </div>
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Width</Label>
-  //                   <Input
-  //                     placeholder="px"
-  //                     id="width"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.width}
-  //                   />
-  //                 </div>
-  //               </div>
-  //             </div>
-  //             <p>Margin px</p>
-  //             <div className="flex gap-4 flex-col">
-  //               <div className="flex gap-4">
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Top</Label>
-  //                   <Input
-  //                     id="marginTop"
-  //                     placeholder="px"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.marginTop}
-  //                   />
-  //                 </div>
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Bottom</Label>
-  //                   <Input
-  //                     placeholder="px"
-  //                     id="marginBottom"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.marginBottom}
-  //                   />
-  //                 </div>
-  //               </div>
-  //               <div className="flex gap-4">
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Left</Label>
-  //                   <Input
-  //                     placeholder="px"
-  //                     id="marginLeft"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.marginLeft}
-  //                   />
-  //                 </div>
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Right</Label>
-  //                   <Input
-  //                     placeholder="px"
-  //                     id="marginRight"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.marginRight}
-  //                   />
-  //                 </div>
-  //               </div>
-  //             </div>
-  //           </div>
-  //           <div className="flex flex-col gap-2">
-  //             <p>Padding px</p>
-  //             <div className="flex gap-4 flex-col">
-  //               <div className="flex gap-4">
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Top</Label>
-  //                   <Input
-  //                     placeholder="px"
-  //                     id="paddingTop"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.paddingTop}
-  //                   />
-  //                 </div>
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Bottom</Label>
-  //                   <Input
-  //                     placeholder="px"
-  //                     id="paddingBottom"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.paddingBottom}
-  //                   />
-  //                 </div>
-  //               </div>
-  //               <div className="flex gap-4">
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Left</Label>
-  //                   <Input
-  //                     placeholder="px"
-  //                     id="paddingLeft"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.paddingLeft}
-  //                   />
-  //                 </div>
-  //                 <div>
-  //                   <Label className="text-muted-foreground">Right</Label>
-  //                   <Input
-  //                     placeholder="px"
-  //                     id="paddingRight"
-  //                     onChange={handleStyleChanges}
-  //                     value={selectedElement.style.paddingRight}
-  //                   />
-  //                 </div>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </AccordionContent>
-  //     </AccordionItem>
-  //     <AccordionItem value="Decorations" className="py-0">
-  //       <AccordionTrigger className="!no-underline">
-  //         Decorations
-  //       </AccordionTrigger>
-  //       <AccordionContent className="px-2 flex flex-col gap-4">
-  //         <div>
-  //           <Label className="text-muted-foreground">Opacity</Label>
-  //           <div className="flex items-center justify-end">
-  //             <small className="p-2">
-  //               {typeof selectedElement.style?.opacity === "number"
-  //                 ? selectedElement.style?.opacity
-  //                 : parseFloat(
-  //                     (selectedElement.style?.opacity || "0").replace("%", "")
-  //                   ) || 0}
-  //               %
-  //             </small>
-  //           </div>
-  //           <Slider
-  //             onValueChange={(e) => {
-  //               handleStyleChanges({
-  //                 target: {
-  //                   id: "opacity",
-  //                   value: `${e[0]}%`,
-  //                 },
-  //               });
-  //             }}
-  //             defaultValue={[
-  //               typeof selectedElement.style?.opacity === "number"
-  //                 ? selectedElement.style?.opacity
-  //                 : parseFloat(
-  //                     (selectedElement.style?.opacity || "0").replace("%", "")
-  //                   ) || 0,
-  //             ]}
-  //             max={100}
-  //             step={1}
-  //           />
-  //         </div>
-  //         <div>
-  //           <Label className="text-muted-foreground">Border Radius</Label>
-  //           <div className="flex items-center justify-end">
-  //             <small className="">
-  //               {typeof selectedElement.style?.borderRadius === "number"
-  //                 ? selectedElement.style?.borderRadius
-  //                 : parseFloat(
-  //                     (selectedElement.style?.borderRadius || "0").replace(
-  //                       "px",
-  //                       ""
-  //                     )
-  //                   ) || 0}
-  //               px
-  //             </small>
-  //           </div>
-  //           <Slider
-  //             onValueChange={(e) => {
-  //               handleStyleChanges({
-  //                 target: {
-  //                   id: "borderRadius",
-  //                   value: `${e[0]}px`,
-  //                 },
-  //               });
-  //             }}
-  //             defaultValue={[
-  //               typeof selectedElement.style?.borderRadius === "number"
-  //                 ? selectedElement.style?.borderRadius
-  //                 : parseFloat(
-  //                     (selectedElement.style?.borderRadius || "0").replace(
-  //                       "%",
-  //                       ""
-  //                     )
-  //                   ) || 0,
-  //             ]}
-  //             max={100}
-  //             step={1}
-  //           />
-  //         </div>
-  //         <div className="flex flex-col gap-2">
-  //           <Label className="text-muted-foreground">Background Color</Label>
-  //           <div className="flex  border-[1px] rounded-md overflow-clip">
-  //             <div
-  //               className="w-12 "
-  //               style={{
-  //                 backgroundColor: selectedElement.style.backgroundColor,
-  //               }}
-  //             />
-  //             <Input
-  //               placeholder="#HFI245"
-  //               className="!border-y-0 rounded-none !border-r-0 mr-2"
-  //               id="backgroundColor"
-  //               onChange={handleStyleChanges}
-  //               value={selectedElement.style.backgroundColor}
-  //             />
-  //           </div>
-  //         </div>
-  //         <div className="flex flex-col gap-2">
-  //           <Label className="text-muted-foreground">Background Image</Label>
-  //           <div className="flex  border-[1px] rounded-md overflow-clip">
-  //             <div
-  //               className="w-12 bg-cover"
-  //               style={{
-  //                 backgroundImage: selectedElement.style.backgroundImage,
-  //               }}
-  //             />
-  //             <Input
-  //               placeholder="url()"
-  //               className="!border-y-0 rounded-none !border-r-0 mr-2"
-  //               id="backgroundImage"
-  //               onChange={handleStyleChanges}
-  //               value={selectedElement.style.backgroundImage}
-  //             />
-  //           </div>
-  //         </div>
-  //         <div className="flex flex-col gap-2">
-  //           <Label className="text-muted-foreground">Image Position</Label>
-  //           <Tabs
-  //             onValueChange={(e) =>
-  //               handleStyleChanges({
-  //                 target: {
-  //                   id: "backgroundSize",
-  //                   value: e,
-  //                 },
-  //               })
-  //             }
-  //             value={selectedElement.style.backgroundSize?.toString()}
-  //           >
-  //             <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit gap-4">
-  //               <TabsTrigger
-  //                 value="cover"
-  //                 className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //               >
-  //                 <ChevronsLeftRightIcon size={18} />
-  //               </TabsTrigger>
-  //               <TabsTrigger
-  //                 value="contain"
-  //                 className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //               >
-  //                 <AlignVerticalJustifyCenter size={22} />
-  //               </TabsTrigger>
-  //               <TabsTrigger
-  //                 value="auto"
-  //                 className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //               >
-  //                 <LucideImageDown size={18} />
-  //               </TabsTrigger>
-  //             </TabsList>
-  //           </Tabs>
-  //         </div>
-  //       </AccordionContent>
-  //     </AccordionItem>
-  //     <AccordionItem value="Flexbox" className="py-0 ">
-  //       <AccordionTrigger className="!no-underline">Flexbox</AccordionTrigger>
-  //       <AccordionContent>
-  //         <Label className="text-muted-foreground">Justify Content</Label>
-  //         <Tabs
-  //           onValueChange={(e) =>
-  //             handleStyleChanges({
-  //               target: {
-  //                 id: "justifyContent",
-  //                 value: e,
-  //               },
-  //             })
-  //           }
-  //           value={selectedElement.style.justifyContent}
-  //         >
-  //           <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit gap-4">
-  //             <TabsTrigger
-  //               value="space-between"
-  //               className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //             >
-  //               <AlignHorizontalSpaceBetween size={18} />
-  //             </TabsTrigger>
-  //             <TabsTrigger
-  //               value="space-evenly"
-  //               className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //             >
-  //               <AlignHorizontalSpaceAround size={18} />
-  //             </TabsTrigger>
-  //             <TabsTrigger
-  //               value="center"
-  //               className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //             >
-  //               <AlignHorizontalJustifyCenterIcon size={18} />
-  //             </TabsTrigger>
-  //             <TabsTrigger
-  //               value="start"
-  //               className="w-10 h-10 p-0 data-[state=active]:bg-muted "
-  //             >
-  //               <AlignHorizontalJustifyStart size={18} />
-  //             </TabsTrigger>
-  //             <TabsTrigger
-  //               value="end"
-  //               className="w-10 h-10 p-0 data-[state=active]:bg-muted "
-  //             >
-  //               <AlignHorizontalJustifyEndIcon size={18} />
-  //             </TabsTrigger>
-  //           </TabsList>
-  //         </Tabs>
-  //         <Label className="text-muted-foreground">Align Items</Label>
-  //         <Tabs
-  //           onValueChange={(e) =>
-  //             handleStyleChanges({
-  //               target: {
-  //                 id: "alignItems",
-  //                 value: e,
-  //               },
-  //             })
-  //           }
-  //           value={selectedElement.style.alignItems}
-  //         >
-  //           <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit gap-4">
-  //             <TabsTrigger
-  //               value="center"
-  //               className="w-10 h-10 p-0 data-[state=active]:bg-muted"
-  //             >
-  //               <AlignVerticalJustifyCenter size={18} />
-  //             </TabsTrigger>
-  //             <TabsTrigger
-  //               value="normal"
-  //               className="w-10 h-10 p-0 data-[state=active]:bg-muted "
-  //             >
-  //               <AlignVerticalJustifyStart size={18} />
-  //             </TabsTrigger>
-  //           </TabsList>
-  //         </Tabs>
-  //       </AccordionContent>
-  //     </AccordionItem>
-  //   </Accordion>
-  // );
+  if (
+    selectedElement !== null &&
+    selectedElement.type === SCREEN_COMPONENT_TYPE_TEXT
+  ) {
+    return (
+      <div className="flex flex-col gap-4">
+        {/* size */}
+        <div className="flex flex-col gap-1">
+          <p className="text-muted-foreground">Size</p>
+          <Input
+            id="size"
+            type="number"
+            onChange={(e) =>
+              handlePropChange(selectedElement.id, selectedElement.type, {
+                size: Number(e.target.value),
+              })
+            }
+            value={selectedElement.props.size}
+          />
+        </div>
+        {/* wight */}
+        <div className="flex flex-col gap-1 ">
+          <p className="text-muted-foreground">Weight</p>
+          <Tabs
+            onValueChange={(weight: string) => {
+              if (
+                weight === "thin" ||
+                weight === "normal" ||
+                weight === "bold"
+              ) {
+                handlePropChange(selectedElement.id, selectedElement.type, {
+                  weight,
+                });
+              }
+            }}
+            value={selectedElement.props.weight}
+          >
+            <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit">
+              <TabsTrigger
+                value="thin"
+                className="w-1/3 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200  hover:bg-gray-50"
+              >
+                Thin
+              </TabsTrigger>
+              <TabsTrigger
+                value="normal"
+                className="w-1/3 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200 hover:bg-gray-50"
+              >
+                Normal
+              </TabsTrigger>
+              <TabsTrigger
+                value="bold"
+                className="w-1/3 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200 hover:bg-gray-50"
+              >
+                Bold
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        {/* align */}
+        <div className="flex flex-col gap-1 ">
+          <p className="text-muted-foreground">Align</p>
+          <Tabs
+            onValueChange={(align: string) => {
+              if (align === "left" || align === "center" || align === "right") {
+                handlePropChange(selectedElement.id, selectedElement.type, {
+                  align,
+                });
+              }
+            }}
+            value={selectedElement.props.align}
+          >
+            <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit">
+              <TabsTrigger
+                value="left"
+                className="w-1/3 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200  hover:bg-gray-50"
+              >
+                <AlignLeft size={18} />
+              </TabsTrigger>
+              <TabsTrigger
+                value="center"
+                className="w-1/3 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200 hover:bg-gray-50"
+              >
+                <AlignCenter size={18} />
+              </TabsTrigger>
+              <TabsTrigger
+                value="right"
+                className="w-1/3 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200 hover:bg-gray-50"
+              >
+                <AlignRight size={18} />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        {/* fill */}
+        <div className="flex flex-col gap-1 ">
+          <p className="text-muted-foreground">Fill</p>
+          <FillPicker
+            background={selectedElement.props.fill ?? "black"}
+            setBackground={(background) => {
+              handlePropChange(selectedElement.id, selectedElement.type, {
+                fill: background,
+              });
+            }}
+          />
+        </div>
+        {/* background */}
+        {/* shadow */}
+        <div className="flex flex-col gap-1 ">
+          <p className="text-muted-foreground">Shadow</p>
+          <Tabs
+            onValueChange={(shadow: string) => {
+              if (shadow === "yes" || shadow === "no") {
+                handlePropChange(selectedElement.id, selectedElement.type, {
+                  shadow: shadow === "yes",
+                });
+              }
+            }}
+            value={selectedElement.props.shadow ? "yes" : "no"}
+          >
+            <TabsList className="flex items-center flex-row justify-between border-[1px] rounded-md bg-transparent h-fit">
+              <TabsTrigger
+                value="yes"
+                className="w-1/2 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200  hover:bg-gray-50"
+              >
+                Yes
+              </TabsTrigger>
+              <TabsTrigger
+                value="no"
+                className="w-1/2 h-10 p-0 flex justify-center items-center data-[state=active]:bg-gray-200 hover:bg-gray-50"
+              >
+                No
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        {/* padding-x */}
+        <div className="flex flex-col gap-1">
+          <p className="text-muted-foreground">Padding X</p>
+          <Input
+            id="size"
+            type="number"
+            onChange={(e) =>
+              handlePropChange(selectedElement.id, selectedElement.type, {
+                paddingX: Number(e.target.value),
+              })
+            }
+            value={selectedElement.props.paddingX}
+          />
+        </div>
+        {/* padding-y */}
+        <div className="flex flex-col gap-1">
+          <p className="text-muted-foreground">Padding Y</p>
+          <Input
+            id="size"
+            type="number"
+            onChange={(e) =>
+              handlePropChange(selectedElement.id, selectedElement.type, {
+                paddingY: Number(e.target.value),
+              })
+            }
+            value={selectedElement.props.paddingY?.toString()}
+          />
+        </div>
+      </div>
+      // <div className="flex flex-col gap-2">
+      //   <p className="text-muted-foreground">Color</p>
+      //   <Input
+      //     id="color"
+      //     onChange={handleStyleChanges}
+      //     value={selectedElement.style.color}
+      //   />
+      // </div>
+      // <div className="flex gap-4">
+      //   <div>
+      //     <Label className="text-muted-foreground">Weight</Label>
+      //     <Select
+      //       onValueChange={(e) =>
+      //         handleStyleChanges({
+      //           target: {
+      //             id: "font-weight",
+      //             value: e,
+      //           },
+      //         })
+      //       }
+      //     >
+      //       <SelectTrigger className="w-[180px]">
+      //         <SelectValue placeholder="Select a weight" />
+      //       </SelectTrigger>
+      //       <SelectContent>
+      //         <SelectGroup>
+      //           <SelectLabel>Font Weights</SelectLabel>
+      //           <SelectItem value="bold">Bold</SelectItem>
+      //           <SelectItem value="normal">Regular</SelectItem>
+      //           <SelectItem value="lighter">Light</SelectItem>
+      //         </SelectGroup>
+      //       </SelectContent>
+      //     </Select>
+      //   </div>
+      //   <div>
+      //     <Label className="text-muted-foreground">Size</Label>
+      //     <Input
+      //       placeholder="px"
+      //       id="fontSize"
+      //       onChange={handleStyleChanges}
+      //       value={selectedElement.style.fontSize}
+      //     />
+      //   </div>
+      // </div>
+    );
+  }
 };

@@ -37,8 +37,6 @@ export const Screen = () => {
 
   const handleLayoutDrop = useCallback<DropzoneProps["onDrop"]>(
     (e) => {
-      console.log("Screen.handleLayoutDrop", e);
-
       const layoutType = e.dataTransfer.getData(
         DRAGGABLE_TYPE_DATA_TRANSFER_KEY
       );
@@ -64,7 +62,7 @@ export const Screen = () => {
   );
 
   return (
-    <div className={cn("flex relative bg-gray-400", widthHeightClassName)}>
+    <div className={cn("flex relative bg-white", widthHeightClassName)}>
       {mode === "EDITOR_MODE_EDIT" ? (
         <Dropzone className="p-6" onDrop={handleLayoutDrop}>
           {maybeLayout}

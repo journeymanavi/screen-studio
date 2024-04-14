@@ -33,7 +33,7 @@ export const VideoPicker = () => {
           <Button size="sm" variant="secondary">
             <span className="inline-flex items-center gap-2">
               <LinkIcon size={16} />
-              Pick Video URL
+              Pick Video
             </span>
           </Button>
         </DialogTrigger>

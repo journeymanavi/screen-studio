@@ -1,4 +1,6 @@
 import {
+  ASPECT_RATIO_16_IS_TO_9,
+  ASPECT_RATIO_4_IS_TO_3,
   EDITOR_MODE_EDIT,
   EDITOR_MODE_PREVIEW,
   SCREEN_COMPONENT_TYPE_IMAGE,
@@ -34,10 +36,13 @@ export type ScreenComponentType =
 export type ScreenComponentTextProps = {
   text?: string;
   size?: number;
-  wight?: "thin" | "normal" | "bold";
+  weight?: "thin" | "normal" | "bold";
+  align?: "left" | "center" | "right";
   fill?: string;
   background?: string;
   shadow?: boolean;
+  paddingX?: number;
+  paddingY?: number;
 };
 
 export type ScreenComponentText = ScreenElement<ScreenComponentTypeText> & {
@@ -46,7 +51,6 @@ export type ScreenComponentText = ScreenElement<ScreenComponentTypeText> & {
 
 export type ScreenComponentImageProps = {
   src?: string;
-  loop?: boolean;
 };
 
 export type ScreenComponentImage = ScreenElement<ScreenComponentTypeImage> & {
@@ -55,7 +59,6 @@ export type ScreenComponentImage = ScreenElement<ScreenComponentTypeImage> & {
 
 export type ScreenComponentVideoProps = {
   src?: string;
-  autoplay?: boolean;
   loop?: boolean;
 };
 
@@ -132,8 +135,8 @@ export type ScreenElementProps<
 
 // Screen ---------------------------------------------------------------------
 
-export type ScreenAspectRatio16IsTo9 = "16:9";
-export type ScreenAspectRatio4IsTo3 = "4:3";
+export type ScreenAspectRatio16IsTo9 = typeof ASPECT_RATIO_16_IS_TO_9;
+export type ScreenAspectRatio4IsTo3 = typeof ASPECT_RATIO_4_IS_TO_3;
 
 export type ScreenAspectRatio =
   | ScreenAspectRatio16IsTo9

@@ -25,16 +25,13 @@ import {
   AlertDialogTitle,
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
 import { ImageComponentTool } from "./tool-pallettes/components/image-component-tool";
 import { TextComponentTool } from "./tool-pallettes/components/text-component-tool";
 import { VideoComponentTool } from "./tool-pallettes/components/video-component-tool";
 import { BentoBoxLayoutTool } from "./tool-pallettes/layouts/bento-box-layout-tool";
 import { FullScreenLayoutTool } from "./tool-pallettes/layouts/full-screen-layout-tool";
 import { PolaroidLayoutTool } from "./tool-pallettes/layouts/polaroid-layout-tool";
-import { ImagePicker } from "./tool-pallettes/properties/image-picker";
 import { PropertiesPanel } from "./tool-pallettes/properties/properties-panel";
-import { VideoPicker } from "./tool-pallettes/properties/video-picker";
 
 export const ToolPanel = () => {
   const { studioState, dispatch } = useStudio();
@@ -137,9 +134,6 @@ export const ToolPanel = () => {
             <TextComponentTool />
             <ImageComponentTool />
             <VideoComponentTool />
-            <Separator />
-            <ImagePicker />
-            <VideoPicker />
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="properties">

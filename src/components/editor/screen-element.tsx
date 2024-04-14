@@ -38,7 +38,7 @@ export const ScreenElement = ({
   return (
     <div
       className={cn(
-        "w-full h-full flex-1 relative border border-gray-500",
+        "w-full h-full flex-1 relative border border-gray-300",
         className,
         {
           "border-yellow-300": isSelected,
@@ -49,7 +49,7 @@ export const ScreenElement = ({
       <div className={"left-0 top-0 absolute w-full"}>
         <div
           className={cn(
-            "absolute bottom-0 left-0 text-xs px-1 rounded-t-sm cursor-pointer bg-gray-500 text-gray-300",
+            "absolute bottom-0 left-0 text-xs px-1 rounded-t-sm cursor-pointer bg-gray-300 text-gray-500",
             {
               "bg-yellow-300 text-black font-bold": isSelected,
             }
