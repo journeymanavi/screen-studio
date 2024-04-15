@@ -1,5 +1,6 @@
 import {
   DRAGGABLE_TYPE_DATA_TRANSFER_KEY,
+  EDITOR_MODE_PREVIEW,
   SCREEN_COMPONENT_TYPE_IMAGE,
   SCREEN_COMPONENT_TYPE_TEXT,
   SCREEN_COMPONENT_TYPE_VIDEO,
@@ -18,20 +19,15 @@ import { ScreenElement } from "../screen-element";
 export const FullScreenLayout = () => {
   const { studioState, dispatch } = useStudio();
 
-  const selectedScreen =
-    studioState.editor.screens[studioState.editor.selectedScreen];
-  const screenLayout = selectedScreen.layout;
+  const showPlayer = studioState.showPlayer;
 
-  if (
-    screenLayout !== null &&
-    screenLayout.type !== SCREEN_LAYOUT_TYPE_FULL_SCREEN
-  ) {
-    throw new Error(
-      `FullScreenLayout can not render screen layout type ${screenLayout.type}!`
-    );
-  }
+  const mode = studioState.editor.mode;
 
-  const containerClassName = "w-full h-full flex-1";
+  const selectedScreen = showPlayer
+    ? studioState.player.screenSpec
+    : studioState.editor.screens[studioState.editor.selectedScreen];
+
+  const screenLayout = selectedScreen?.layout;
 
   const handleComponentDrop = useCallback<DropzoneProps["onDrop"]>(
     (e) => {
@@ -72,6 +68,18 @@ export const FullScreenLayout = () => {
     [dispatch, screenLayout]
   );
 
+  if (!selectedScreen || !screenLayout) {
+    return null;
+  }
+
+  if (screenLayout.type !== SCREEN_LAYOUT_TYPE_FULL_SCREEN) {
+    throw new Error(
+      `FullScreenLayout can not render screen layout type ${screenLayout.type}!`
+    );
+  }
+
+  const containerClassName = "w-full h-full flex-1";
+
   if (screenLayout === null) {
     return null;
   }
@@ -95,15 +103,15 @@ export const FullScreenLayout = () => {
       break;
   }
 
-  if (studioState.editor.mode === "EDITOR_MODE_EDIT") {
-    return (
-      <ScreenElement element={screenLayout}>
-        <Dropzone onDrop={handleComponentDrop} className={cn("p-6")}>
-          {maybeComponentToRender}
-        </Dropzone>
-      </ScreenElement>
-    );
+  if (showPlayer || mode === EDITOR_MODE_PREVIEW) {
+    return <div className={containerClassName}>{maybeComponentToRender}</div>;
   }
 
-  return <div className={containerClassName}>{maybeComponentToRender}</div>;
+  return (
+    <ScreenElement element={screenLayout}>
+      <Dropzone onDrop={handleComponentDrop} className={cn("p-6")}>
+        {maybeComponentToRender}
+      </Dropzone>
+    </ScreenElement>
+  );
 };

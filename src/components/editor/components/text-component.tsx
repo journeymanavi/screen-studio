@@ -1,4 +1,4 @@
-import { SCREEN_COMPONENT_TYPE_TEXT } from "@/constants";
+import { EDITOR_MODE_PREVIEW, SCREEN_COMPONENT_TYPE_TEXT } from "@/constants";
 import { useStudio } from "@/contexts/studio/studio-hook";
 import { ScreenComponentText } from "@/types";
 import {
@@ -45,27 +45,30 @@ export const TextComponent = ({ element }: TextComponentProps) => {
     }
   }, [element.props.text]);
 
-  if (studioState.editor.mode === "EDITOR_MODE_EDIT") {
+  if (
+    studioState.showPlayer ||
+    studioState.editor.mode === EDITOR_MODE_PREVIEW
+  ) {
     return (
-      <ScreenElement element={element}>
-        <div
-          ref={textElementRef}
-          style={getCSSPropertiesFromTextComponentProps(element.props)}
-          className="outline-none w-full h-full flex-1 flex"
-          contentEditable="plaintext-only"
-          onBlur={updateTextComponentProps}
-        />
-      </ScreenElement>
+      <div
+        className="w-full h-full flex-1 flex"
+        style={getCSSPropertiesFromTextComponentProps(element.props)}
+      >
+        {element.props.text}
+      </div>
     );
   }
 
   return (
-    <div
-      className="w-full h-full flex-1 flex"
-      style={getCSSPropertiesFromTextComponentProps(element.props)}
-    >
-      {element.props.text}
-    </div>
+    <ScreenElement element={element}>
+      <div
+        ref={textElementRef}
+        style={getCSSPropertiesFromTextComponentProps(element.props)}
+        className="outline-none w-full h-full flex-1 flex"
+        contentEditable="plaintext-only"
+        onBlur={updateTextComponentProps}
+      />
+    </ScreenElement>
   );
 };
 

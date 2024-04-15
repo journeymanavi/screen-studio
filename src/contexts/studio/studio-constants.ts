@@ -1,3 +1,4 @@
+import { ROUTE_PATTERN_PLAYER } from "@/constants";
 import {
   Editor,
   EditorHistory,
@@ -5,12 +6,13 @@ import {
   Screen,
   StudioState,
 } from "@/types";
+import { getElementId } from "./studio-reducer";
 
 export const initialEditorModeState: EditorMode = "EDITOR_MODE_EDIT";
 export const initialScreenLayoutState: Screen["layout"] = null;
 export const initialScreenAspectRatio: Screen["aspectRatio"] = "16:9";
 export const initialScreenState: Screen = {
-  id: "",
+  id: getElementId(),
   layout: initialScreenLayoutState,
   aspectRatio: initialScreenAspectRatio,
 };
@@ -33,6 +35,9 @@ export const initialEditorHistoryState: EditorHistory = {
 };
 
 export const initialStudioState: StudioState = {
+  route: window.location.pathname,
   editor: initialEditorState,
+  player: { screenSpec: null },
+  showPlayer: ROUTE_PATTERN_PLAYER.test(window.location.pathname),
   editorHistory: initialEditorHistoryState,
 };

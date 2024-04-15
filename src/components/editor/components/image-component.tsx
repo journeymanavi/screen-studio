@@ -1,3 +1,4 @@
+import { EDITOR_MODE_PREVIEW } from "@/constants";
 import { useStudio } from "@/contexts/studio/studio-hook";
 import { ScreenComponentImage } from "@/types";
 import { ImagePlusIcon } from "lucide-react";
@@ -10,27 +11,30 @@ export type ImageComponentProps = {
 export const ImageComponent = ({ element }: ImageComponentProps) => {
   const { studioState } = useStudio();
 
-  if (studioState.editor.mode === "EDITOR_MODE_EDIT") {
+  if (
+    studioState.showPlayer ||
+    studioState.editor.mode === EDITOR_MODE_PREVIEW
+  ) {
     return (
-      <ScreenElement element={element}>
-        {!element.props.src ? (
-          <div className="h-full flex justify-center items-center w-full">
-            <ImagePlusIcon className="text-gray-500" size={52} />
-          </div>
-        ) : (
-          <img
-            src={element.props.src}
-            className="w-full h-full object-cover object-center"
-          />
-        )}
-      </ScreenElement>
+      <img
+        src={element.props.src}
+        className="w-full h-full object-cover object-center"
+      />
     );
   }
 
   return (
-    <img
-      src={element.props.src}
-      className="w-full h-full object-cover object-center"
-    />
+    <ScreenElement element={element}>
+      {!element.props.src ? (
+        <div className="h-full flex justify-center items-center w-full">
+          <ImagePlusIcon className="text-gray-500" size={52} />
+        </div>
+      ) : (
+        <img
+          src={element.props.src}
+          className="w-full h-full object-cover object-center"
+        />
+      )}
+    </ScreenElement>
   );
 };

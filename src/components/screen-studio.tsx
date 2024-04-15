@@ -1,10 +1,10 @@
 import { StudioProvider } from "../contexts/studio/studio-provider";
-import { Editor } from "./editor/editor";
+import { Router } from "./router";
 
 function ScreenStudio() {
   return (
     <StudioProvider>
-      <Editor />
+      <Router />
     </StudioProvider>
   );
 }

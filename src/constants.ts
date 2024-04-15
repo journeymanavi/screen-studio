@@ -13,3 +13,6 @@ export const SCREEN_COMPONENT_TYPE_VIDEO = "SCREEN_COMPONENT_TYPE_VIDEO";
 
 export const ASPECT_RATIO_16_IS_TO_9 = "16:9";
 export const ASPECT_RATIO_4_IS_TO_3 = "4:3";
+
+export const ROUTE_PATTERN_EDITOR = /\/screen-studio(?:\/)?$/;
+export const ROUTE_PATTERN_PLAYER = /\/screen-studio\/player$/;

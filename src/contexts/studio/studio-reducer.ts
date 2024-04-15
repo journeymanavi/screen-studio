@@ -1,6 +1,7 @@
 import {
   EDITOR_MODE_EDIT,
   EDITOR_MODE_PREVIEW,
+  ROUTE_PATTERN_PLAYER,
   SCREEN_COMPONENT_TYPE_IMAGE,
   SCREEN_COMPONENT_TYPE_TEXT,
   SCREEN_COMPONENT_TYPE_VIDEO,
@@ -23,7 +24,7 @@ import {
 import { Reducer } from "react";
 import { initialScreenState, initialStudioState } from "./studio-constants";
 
-const getElementId = () => Math.floor(Math.random() * 10000).toString();
+export const getElementId = () => Math.floor(Math.random() * 10000).toString();
 
 const addEditorStateToHistory = (
   editorHistory: EditorHistory,
@@ -447,6 +448,14 @@ export const studioReducer: Reducer<StudioState, StudioAction> = (
   // console.log("studioReducer", action);
 
   switch (action.type) {
+    case "NAVIGATE":
+      return {
+        ...state,
+        route: action.payload.route,
+        showPlayer: ROUTE_PATTERN_PLAYER.test(action.payload.route),
+      };
+    case "UPDATE_PLAYER_SCREEN_SPEC":
+      return { ...state, player: { screenSpec: action.payload.screenSpec } };
     case "UNDO":
       return undo(state);
     case "REDO":

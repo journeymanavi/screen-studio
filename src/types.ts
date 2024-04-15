@@ -166,17 +166,26 @@ export type Editor = {
 
 // Studio ---------------------------------------------------------------------
 
+export type Player = {
+  screenSpec: Screen | null;
+};
+
 export type EditorHistory = {
   history: Editor[];
   current: number;
 };
 
 export type StudioState = {
+  route: string;
+  showPlayer: boolean;
+  player: Player;
   editor: Editor;
   editorHistory: EditorHistory;
 };
 
 export type StudioAction =
+  | { type: "NAVIGATE"; payload: { route: string } }
+  | { type: "UPDATE_PLAYER_SCREEN_SPEC"; payload: { screenSpec: Screen } }
   | {
       type: "UNDO";
     }
